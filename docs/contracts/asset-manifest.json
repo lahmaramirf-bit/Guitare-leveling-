@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "status": "SPEC_ONLY_NO_PRODUCTION_SPRITES",
+  "updated": "2026-11-06",
+  "statusLegend": {
+    "missing": "aucun fichier : ne rien rendre",
+    "reference_only": "planche concept : affichable uniquement étiquetée CONCEPT, jamais comme équipement",
+    "approved": "couche de production validée par le fondateur (fichier requis)"
+  },
+  "canvas": { "width": 1024, "height": 1280, "origin": "top-left", "anchor": { "centerX": 512, "groundY": 1170 } },
+  "layerOrder": ["accessory_back", "guitar_back", "hair_back", "body", "bottom", "shoes", "top", "face", "hair_front", "accessory_front", "guitar_front"],
+  "references": [
+    { "id": "master_characters", "path": "handoff/assets/reference/master-characters-APPROVED.png", "status": "reference_only", "width": 1536, "height": 1024, "label": "CONCEPT — personnages approuvés (planche aplatie)" },
+    { "id": "art_and_themes", "path": "handoff/assets/reference/art-and-three-themes-APPROVED.png", "status": "reference_only", "width": 1536, "height": 1024, "label": "CONCEPT — DA et 3 thèmes (planche aplatie)" }
+  ],
+  "avatars": [
+    { "id": "boy", "identity": "garçon brun ébouriffé, écouteurs, veste académie bleu nuit/crème, étui de guitare", "productionStatus": "missing", "baseImage": null, "slots": { "hair": [], "top": [], "bottom": [], "accessory": [], "guitar": [] } },
+    { "id": "girl", "identity": "fille corail, queue de cheval, barrette clé de sol, veste académie bleu nuit/crème touches corail", "productionStatus": "missing", "baseImage": null, "slots": { "hair": [], "top": [], "bottom": [], "accessory": [], "guitar": [] } }
+  ],
+  "mvpMiniPackTarget": { "perAvatar": { "base": 1, "hair": 2, "top": 2, "bottom": 1, "accessory": 1, "guitar": 2 } },
+  "itemShape": { "id": "string", "slot": "hair|top|bottom|accessory|guitar", "rarity": "common|rare|epic|legendary", "layers": { "<layerId>": "path/to/1024x1280.png" }, "status": "missing|reference_only|approved", "source": "path PSD/KRA", "license": "string", "unlock": "id de déblocage géré par la logique de progression existante" },
+  "themes": ["sakura", "cyberpunk", "ombre"]
+}

@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "guitar-leveling/theme-config.schema.json",
+  "title": "ThemeConfig",
+  "description": "Un thème change UI, palette et décor ; jamais l'échelle ni l'identité de l'avatar.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["id", "label", "tokens", "background"],
+  "properties": {
+    "id": { "enum": ["sakura", "cyberpunk", "ombre"] },
+    "label": { "type": "string" },
+    "subtitle": { "type": "string" },
+    "tokensStatus": { "enum": ["provisional", "approved"] },
+    "tokens": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["bg", "surface", "ink", "accent", "accent2", "accent3"],
+      "properties": {
+        "bg": { "$ref": "#/$defs/hex" },
+        "surface": { "$ref": "#/$defs/hex" },
+        "ink": { "$ref": "#/$defs/hex" },
+        "accent": { "$ref": "#/$defs/hex" },
+        "accent2": { "$ref": "#/$defs/hex" },
+        "accent3": { "$ref": "#/$defs/hex" }
+      }
+    },
+    "background": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "image"],
+      "properties": {
+        "status": { "enum": ["missing", "reference_only", "approved"] },
+        "image": { "type": ["string", "null"] },
+        "reference": { "type": "string" }
+      }
+    },
+    "legacyThemeIds": { "type": "array", "items": { "type": "string" }, "description": "ids de thèmes de l app actuelle migrés vers ce thème (décision D-003). Valeurs actuelles SUPPOSÉES d après les captures : à remplacer par les vrais ids trouvés dans le code" }
+  },
+  "$defs": { "hex": { "type": "string", "pattern": "^#[0-9a-fA-F]{6}$" } }
+}

@@ -1,0 +1,73 @@
+{
+  "schemaVersion": 1,
+  "status": "SPEC_ONLY_NO_PRODUCTION_SPRITES",
+  "canvas": {
+    "width": 1024,
+    "height": 1280,
+    "origin": "top-left",
+    "anchor": {
+      "centerX": 512,
+      "groundY": 1170
+    }
+  },
+  "requiredLayers": [
+    "accessory_back",
+    "guitar_back",
+    "hair_back",
+    "body",
+    "bottom",
+    "shoes",
+    "top",
+    "face",
+    "hair_front",
+    "accessory_front",
+    "guitar_front"
+  ],
+  "avatars": [
+    {
+      "id": "boy",
+      "displayName": "Guitariste",
+      "productionStatus": "missing",
+      "reference": "assets/reference/master-characters-APPROVED.png",
+      "baseImage": null,
+      "hairOptions": [],
+      "topOptions": [],
+      "bottomOptions": [],
+      "accessoryOptions": [],
+      "guitarOptions": []
+    },
+    {
+      "id": "girl",
+      "displayName": "Guitariste",
+      "productionStatus": "missing",
+      "reference": "assets/reference/master-characters-APPROVED.png",
+      "baseImage": null,
+      "hairOptions": [],
+      "topOptions": [],
+      "bottomOptions": [],
+      "accessoryOptions": [],
+      "guitarOptions": []
+    }
+  ],
+  "themes": [
+    {
+      "id": "sakura",
+      "productionStatus": "reference_only",
+      "reference": "assets/reference/art-and-three-themes-APPROVED.png",
+      "backgroundImage": null
+    },
+    {
+      "id": "cyberpunk",
+      "productionStatus": "reference_only",
+      "reference": "assets/reference/art-and-three-themes-APPROVED.png",
+      "backgroundImage": null
+    },
+    {
+      "id": "ombre",
+      "productionStatus": "reference_only",
+      "reference": "assets/reference/art-and-three-themes-APPROVED.png",
+      "backgroundImage": null
+    }
+  ],
+  "note": "Contract / schema exemplar only: do not render missing paths or claim that sprite layers exist."
+}

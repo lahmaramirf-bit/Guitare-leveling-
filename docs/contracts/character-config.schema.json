@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "guitar-leveling/character-config.schema.json",
+  "title": "CharacterConfig",
+  "description": "Apparence sauvegardée du joueur. Ne contient que des ids ; aucune donnée de progression (XP, monnaie, gacha) ici. null = valeur par défaut de l'avatar.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "avatarId"],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "avatarId": { "enum": ["boy", "girl"], "description": "boy = garçon brun ; girl = fille corail (identités verrouillées)" },
+    "hair": { "type": ["string", "null"], "pattern": "^[a-z0-9_]+$" },
+    "top": { "type": ["string", "null"], "pattern": "^[a-z0-9_]+$" },
+    "bottom": { "type": ["string", "null"], "pattern": "^[a-z0-9_]+$" },
+    "accessory": { "type": ["string", "null"], "pattern": "^[a-z0-9_]+$" },
+    "guitar": { "type": ["string", "null"], "pattern": "^[a-z0-9_]+$" },
+    "expression": { "enum": ["neutral", "happy", "focused", "surprised", null] },
+    "themeId": { "enum": ["sakura", "cyberpunk", "ombre"] }
+  }
+}

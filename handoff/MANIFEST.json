@@ -1,0 +1,127 @@
+{
+  "package": "Guitar-Leveling-Claude-Code-Handoff-v1",
+  "created": "2026-11-06",
+  "fileCount": 24,
+  "files": [
+    {
+      "path": "CLAUDE.md",
+      "sha256": "e062888605bf5961665c3ded2870c857f296db03965c9ffbadb4061dd6183140",
+      "bytes": 4431
+    },
+    {
+      "path": "PROMPT_A_COLLER_DANS_CLAUDE_CODE.md",
+      "sha256": "44a874d8c1494cbc5ee1a9d132057a7b6098272ed9a7d733b657c0bcae68df17",
+      "bytes": 4092
+    },
+    {
+      "path": "README_START_HERE.md",
+      "sha256": "9779d621da9fe7842e29fb6781019db8dc455334cf9f959bac2cf464d9da6446",
+      "bytes": 3535
+    },
+    {
+      "path": "assets/existing-app/current-home-guitar-leveling.png",
+      "sha256": "35676e0e08e8f1eb916556f978234756fc6615f6aa014b5c176978df6c557515",
+      "bytes": 187121
+    },
+    {
+      "path": "assets/existing-app/current-methode-guitare.png",
+      "sha256": "f09582aa6d81324d0907f8d7f2d82978bb180a88efa30032dcfd5d4a247893c4",
+      "bytes": 417113
+    },
+    {
+      "path": "assets/existing-app/current-theme-picker.png",
+      "sha256": "456addb8a2121c4bd4a3e1dc5036847105d08207637464fda893960ec2001c5b",
+      "bytes": 126709
+    },
+    {
+      "path": "assets/reference/art-and-three-themes-APPROVED.png",
+      "sha256": "bf950fe3516d3c615d4b8affe93f67f69fb1d09f584555e483ffb289ffdf87e1",
+      "bytes": 2521383
+    },
+    {
+      "path": "assets/reference/master-characters-APPROVED.png",
+      "sha256": "0b22fdecd5545d2810e722e2884a83b16d0dc8cca49999dafbf64a618e373bc3",
+      "bytes": 3423560
+    },
+    {
+      "path": "docs/01_PRODUCT_BRIEF.md",
+      "sha256": "c68b1dac1e03072832a0e62f39f3fe8f50f412d35767c14ffceee4f07fada6e1",
+      "bytes": 1807
+    },
+    {
+      "path": "docs/02_ART_DIRECTION_LOCK.md",
+      "sha256": "faef049da8dcce75e40fc8ee61794c250b9208e397847de89138b00efd042edf",
+      "bytes": 2330
+    },
+    {
+      "path": "docs/03_IMPLEMENTATION_BACKLOG.md",
+      "sha256": "c9ac4ffb726b1d4755e514e591722c65817c0f2048f8e2ee33ac3d657d9bded0",
+      "bytes": 1697
+    },
+    {
+      "path": "docs/04_ASSET_SPEC.md",
+      "sha256": "00dffe0337e23ba1e5edec494c8936ed5022662e9557ed142b34a0c95d8e26e0",
+      "bytes": 1918
+    },
+    {
+      "path": "docs/05_ACCEPTANCE_GATES.md",
+      "sha256": "c25e6e07a78570d8c7e9be5bb89d3142dfe1cb1507ef1270a093c6abb71a9021",
+      "bytes": 2340
+    },
+    {
+      "path": "docs/06_TECHNICAL_DECISIONS.md",
+      "sha256": "ecc786edd95c1f006dcd25f5eccc34e01fa1532fc9a0c41c32b8f8ebe1bf1573",
+      "bytes": 1243
+    },
+    {
+      "path": "docs/07_STATUS_REALITY_CHECK.md",
+      "sha256": "80e06a48b63b91e7a217a6e2df0d813027c53333a9ebae1ba1e5a5939afb0250",
+      "bytes": 1599
+    },
+    {
+      "path": "reference_only/IMPORTANT_DO_NOT_USE_AS_APP.md",
+      "sha256": "d9d103e15e16e1eb8ae01838105cf61b1e88c9313f9ef1f457965f97b8734bcc",
+      "bytes": 544
+    },
+    {
+      "path": "reference_only/demo/assets/master-approved.png",
+      "sha256": "0b22fdecd5545d2810e722e2884a83b16d0dc8cca49999dafbf64a618e373bc3",
+      "bytes": 3423560
+    },
+    {
+      "path": "reference_only/demo/assets/themes-approved.png",
+      "sha256": "bf950fe3516d3c615d4b8affe93f67f69fb1d09f584555e483ffb289ffdf87e1",
+      "bytes": 2521383
+    },
+    {
+      "path": "reference_only/demo/index.html",
+      "sha256": "6079637799afdc0d69d10e99156381408aa4effb37599d859c3c9b54e301615b",
+      "bytes": 11029
+    },
+    {
+      "path": "reference_only/previews/cyberpunk.png",
+      "sha256": "12f8b63b4b04ea05ea9092043b5c0f5ffc33dbf1da1b30e0391d16b3a30229e3",
+      "bytes": 1133645
+    },
+    {
+      "path": "reference_only/previews/desktop.png",
+      "sha256": "18ed6a7e814603b739fd90b50426e0b3b0661f75ecbe2200c70abfbc007ce6e2",
+      "bytes": 1108776
+    },
+    {
+      "path": "reference_only/previews/mobile.png",
+      "sha256": "6413d7a55c64e5257a968545e3e81b1265e7d3a36ecc9eb0e81fe9262e84ef46",
+      "bytes": 488329
+    },
+    {
+      "path": "references.html",
+      "sha256": "12908ee873663f478376c195ae13a89b354a446db55abfbff7e7810b4f21dc94",
+      "bytes": 1948
+    },
+    {
+      "path": "templates/asset-manifest.example.json",
+      "sha256": "64e20e256c0e1336a870711f2d766da7eb049145a24a370f1bc157b86e916c24",
+      "bytes": 1786
+    }
+  ]
+}
