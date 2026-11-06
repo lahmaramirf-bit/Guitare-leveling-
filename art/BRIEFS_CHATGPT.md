@@ -36,7 +36,7 @@ Fichier : `girl_base.png`
 D'après la référence jointe (section « Guitares (skins) »), dessine UNE guitare seule, sur fond transparent, format 1024 × 1280, inclinée à 30° comme si elle était tenue en bandoulière par un personnage chibi de face (manche vers le haut à droite), même style que la référence.
 Guitare : [acoustique bois clair | électrique rouge et blanche | électrique violette à motifs dorés (épique) | électrique en cristal bleu lumineux (légendaire)].
 ```
-Fichiers : `guitar_acoustic.png`, `guitar_red_electric.png`, `guitar_epic_violet.png`, `guitar_crystal.png`
+Fichiers : `guitar_study.png`, `guitar_red_electric.png`, `guitar_amethyst.png`, `guitar_crystal.png`
 
 ## Brief 4 — Décors des 3 thèmes (sans personnage)
 
