@@ -26,3 +26,13 @@
 
 ## Non testé
 Safari/iOS, Firefox, appareils Android réels ; lecteur d'écran ; performance de l'ambiance canvas sur mobile bas de gamme (mise en pause hors écran et onglet caché implémentée, non mesurée).
+
+## Lot v0.7 — panneau personnage compact (2026-11-06)
+| Commande | Résultat |
+|---|---|
+| `npm test` | 33/33 — PASS |
+| `npm run e2e` | 40/40 — PASS (personnage entier dans le panneau : desktop 430/468 px, mobile 212/230 px) |
+| `python3 scripts/validate_contracts.py` | 0 erreur — PASS |
+| `node e2e/preview-panel.mjs sakura` | captures + mesures produites, **avec décor provisoire** (`art/previews/*_PROVISOIRE.*`) |
+| `python3 scripts/check_panel_bg.py` | testé sur 2 fichiers factices (non versionnés) : accepte 1400×620 opaque, refuse mauvaise taille et transparence — PASS |
+| Intégration `panel_bg_sakura.png` | **BLOCKED** : fichier non reçu (absent du zip, lien Adobe → proxy 403) |

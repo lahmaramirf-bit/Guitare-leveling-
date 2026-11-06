@@ -19,7 +19,7 @@ import type { AvatarId } from './game/model';
 export type Screen = 'hub' | 'quetes' | 'heros' | 'donjons' | 'repertoire' | 'entrainement' | 'journal' | 'grimoire';
 
 const NAV: { id: Screen; label: string; short: string; icon: string }[] = [
-  { id: 'hub', label: 'Hub', short: 'Hub', icon: '⌂' },
+  { id: 'hub', label: 'Accueil', short: 'Accueil', icon: '⌂' },
   { id: 'quetes', label: 'Quêtes', short: 'Quêtes', icon: '📜' },
   { id: 'heros', label: 'Héros', short: 'Héros', icon: '✧' },
   { id: 'donjons', label: 'Donjons', short: 'Donjons', icon: '⛩' },

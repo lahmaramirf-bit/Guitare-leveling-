@@ -1,27 +1,27 @@
 import { useGame } from '../ui/store';
-import { Bar, Crystal, fmt } from '../ui/bits';
+import { Bar, Crystal, Panel, fmt } from '../ui/bits';
 import { Avatar, AvatarPending } from '../avatar/Avatar';
 import { AmbienceCanvas } from '../appearance/AmbienceCanvas';
 import { WORLDS } from '../appearance/worlds';
+import { CANVAS } from '../avatar/manifest';
 import { effRank, levelOf, streak, xpFor } from '../game/engine';
-import { QUESTS, RANKS, RANK_INDEX } from '../content';
+import { PLAN, QUESTS, RANKS, RANK_INDEX } from '../content';
 import { equipped } from '../game/actions';
+import { currentSong } from '../game/daily';
 import { ITEM } from '../game/catalog';
 import type { Screen } from '../App';
 
-const ENTRIES: { id: Screen; label: string; hint: string; icon: string }[] = [
-  { id: 'quetes', label: 'Quêtes', hint: 'Les 7 quêtes du jour, portail, défis', icon: '📜' },
-  { id: 'entrainement', label: 'Entraînement', hint: 'Session guidée, exercices, métronome', icon: '🎸' },
-  { id: 'donjons', label: 'Donjons', hint: 'Objectifs et boss de ton rang', icon: '⛩' },
-  { id: 'repertoire', label: 'Répertoire', hint: 'Tes morceaux et collections', icon: '♫' },
-  { id: 'heros', label: 'Boutique', hint: 'Cosmétiques gagnés en jouant', icon: '✧' },
-  { id: 'journal', label: 'Journal', hint: 'Carte de pratique, ombres, succès', icon: '📘' },
-];
+/** Hauteur de la boîte avatar, en fraction de la hauteur du décor. */
+export const AVATAR_BOX_H = 0.92;
 
-/** Hub : le héros entier dans son univers, l'état de progression et les entrées du jeu. */
+/**
+ * Accueil : panneau personnage compact (décor + héros entier) puis la progression
+ * et les actions de pratique. Pas de HUD ni de menu de jeu par-dessus le décor.
+ */
 export function Hub({ go }: { go: (s: Screen) => void }) {
   const { save, today, p, crystals, celebrating } = useGame();
   const w = WORLDS[save.profile.theme];
+  const panel = w.panel;
   const xp = p.c.xp;
   const L = levelOf(xp);
   const r = effRank(save, xp);
@@ -29,54 +29,63 @@ export function Hub({ go }: { go: (s: Screen) => void }) {
   const done = save.days[today]?.q.length ?? 0;
   const title = equipped(save, 'title');
   const sk = streak(save, today);
-  const bgFinal = w.background.status === 'approved';
+  const song = currentSong(save);
+  const steps = song ? save.rep[song.id]?.st?.length ?? 0 : 0;
+  const hasBg = panel.status !== 'planned_missing' && !!panel.file;
+  // Pieds du personnage sur la ligne de sol du décor : bas de la boîte = sol + marge sous les pieds du canevas.
+  const boxBottom = (1 - panel.groundY) * 100 - ((CANVAS.height - CANVAS.groundY) / CANVAS.height) * AVATAR_BOX_H * 100;
 
   return (
-    <section className={`hub world-${w.id}`} aria-label={`Hub — ${w.place}`}>
-      <div className="hub-stage" data-testid="hub-stage">
-        <div className="hub-backdrop" aria-hidden="true">
-          {bgFinal
-            ? <picture><source media="(max-width: 760px)" srcSet={w.background.mobile ?? undefined} /><img src={w.background.desktop ?? ''} alt="" /></picture>
-            : <div className="hub-backdrop-provisional" style={{ backgroundImage: `url(${w.provisional})` }} />}
-          <div className="hub-light" />
-        </div>
-        <AmbienceCanvas kind={w.ambience} />
-        <div className="hub-floor" aria-hidden="true" />
-        <div className="hub-hero">
-          {save.profile.avatarConfirmed
-            ? <Avatar avatar={save.profile.avatar} guitar={equipped(save, 'guitar')} state={celebrating ? 'celebrate' : 'idle'} />
-            : <AvatarPending />}
-        </div>
-
-        <div className="hub-status">
-          <div className={`rank-gem small rank-${r.id}`} title={`Rang ${r.id} — ${r.name}`}><span>{r.id === 'N' ? 'S+' : r.id}</span></div>
-          <div className="hub-id">
-            <b className="hub-name">{save.profile.name}</b>
-            <span className="hub-title">{title ? ITEM[title]?.name : r.title} · Niv. <b data-testid="level">{L}</b></span>
-            <Bar label="XP du niveau" value={xp - xpFor(L)} max={xpFor(L + 1) - xpFor(L)} />
+    <section className={`hub world-${w.id}`} aria-label="Accueil">
+      <Panel className="char-panel">
+        <div className={`char-scene ${hasBg ? 'has-bg' : 'no-bg'}`} data-testid="hub-stage" data-panel-status={panel.status} data-ground={panel.groundY}>
+          {hasBg
+            ? <img className="char-bg" src={panel.file!} alt="" draggable={false} />
+            : <div className="char-bg-provisional" style={{ backgroundImage: `url(${w.provisional})` }} aria-hidden="true" />}
+          {!hasBg && <AmbienceCanvas kind={w.ambience} />}
+          <div className="hub-hero" style={{ height: `${AVATAR_BOX_H * 100}%`, bottom: `${boxBottom}%` }}>
+            {save.profile.avatarConfirmed
+              ? <Avatar avatar={save.profile.avatar} guitar={equipped(save, 'guitar')} state={celebrating ? 'celebrate' : 'idle'} />
+              : <AvatarPending />}
           </div>
+          <div className="char-level"><span className="lv-label">Niv.</span> <span className="lv-num" data-testid="level">{L}</span><div className="lv-title">{r.title}</div></div>
+          <div className={`rank-gem small rank-${r.id}`} title={`Rang ${r.id} — ${r.name}`}><span>{r.id === 'N' ? 'S+' : r.id}</span></div>
+          {panel.status === 'candidate' && <span className="provisional-tag"><span className="t-long">Décor candidat · à valider</span><span className="t-short">Candidat</span></span>}
+          {panel.status === 'planned_missing' && <span className="provisional-tag" title={`Fichier attendu : ${panel.expected}`}><span className="t-long">Décor provisoire · {w.name}</span><span className="t-short">Provisoire</span></span>}
         </div>
-        <div className="hub-chips">
-          <span className="chip"><Crystal /> {fmt(crystals)}</span>
-          <span className={`chip streak ${sk > 0 ? 'on' : ''}`}>🔥 {sk} j</span>
+
+        <div className="hero-body">
+          <div className="hero-name-row">
+            <h1 className="hero-name">{save.profile.name}</h1>
+            <span className="tag">{title ? ITEM[title]?.name : r.title}</span>
+            <span className="spacer" />
+            <span className={`streak ${sk > 0 ? 'on' : ''}`} title="Jours consécutifs avec au moins 5 quêtes sur 7">🔥 {sk} jour{sk > 1 ? 's' : ''}</span>
+            <button className="btn btn-gold" onClick={() => go('heros')}>Personnaliser</button>
+          </div>
+          <Bar label="XP du niveau" value={xp - xpFor(L)} max={xpFor(L + 1) - xpFor(L)} />
+          {next && <Bar label={`Vers le rang ${next.id === 'N' ? 'final' : next.id} · niveau ${next.lv}`} value={xp} max={xpFor(next.lv)} />}
+          <div className="hero-foot"><span className="chip"><Crystal /> <b>{fmt(crystals)}</b> cristaux</span></div>
         </div>
-        {!bgFinal && <span className="provisional-tag" title={`Fichiers attendus : ${w.background.expected.join(', ')}`}>Décor provisoire · {w.name}</span>}
-      </div>
+      </Panel>
 
-      <div className="hub-actions">
-        <button className="btn btn-primary btn-big" onClick={() => go('entrainement')}>Commencer l’entraînement ♪</button>
-        <button className="btn btn-big" onClick={() => go('quetes')}>Quêtes du jour <b className="mono">{done}/{QUESTS.length}</b></button>
-        {next && <span className="muted small hub-next">Encore {fmt(Math.max(0, xpFor(next.lv) - xp))} XP avant le rang {next.id === 'N' ? 'final' : next.id}</span>}
-      </div>
-
-      <nav className="hub-menu" aria-label="Lieux du hub">
-        {ENTRIES.map((e) => (
-          <button key={e.id} className="hub-tile" onClick={() => go(e.id)}>
-            <span className="hub-tile-ico" aria-hidden="true">{e.icon}</span>
-            <span className="hub-tile-text"><b>{e.label}</b><span className="small muted">{e.hint}</span></span>
+      <Panel title="Pratiquer aujourd’hui">
+        <div className="practice">
+          <button className="btn btn-primary btn-big" onClick={() => go('entrainement')}>S’entraîner · session guidée ♪</button>
+          <button className="practice-row" onClick={() => go('quetes')}>
+            <span><b>Quêtes du jour</b><span className="small muted">≈ 38 min · 5 sur 7 gardent la série</span></span>
+            <b className="mono">{done} / {QUESTS.length}</b>
           </button>
-        ))}
-      </nav>
+          <button className="practice-row" onClick={() => go('repertoire')}>
+            <span><b>{song ? `Morceau en cours : ${song.t}` : 'Choisir un morceau à apprendre'}</b>
+              <span className="small muted">{song ? (steps < PLAN.length ? `Étape ${steps + 1} / ${PLAN.length} : ${PLAN[steps]}` : 'Plan terminé : joue-le en entier') : 'Répertoire de 193 morceaux, classés par niveau'}</span></span>
+            <span aria-hidden="true">›</span>
+          </button>
+          <button className="practice-row" onClick={() => go('donjons')}>
+            <span><b>Objectifs du rang {r.id === 'N' ? 'S+' : r.id}</b><span className="small muted">{r.name}</span></span>
+            <span aria-hidden="true">›</span>
+          </button>
+        </div>
+      </Panel>
     </section>
   );
 }
