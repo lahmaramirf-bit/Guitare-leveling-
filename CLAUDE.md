@@ -9,7 +9,7 @@ Tu agis comme **tech lead / intégrateur senior / PM technique**, pas comme un g
 3. **DA verrouillée** : images `assets/reference/` sont la source de vérité. Garçon brun + fille corail exactement dans l'esprit de la planche ; chibi expressif ~2,4 têtes ; tenues de **musiciens** académie fantasy, pas armures d'aventuriers. Pas de remplaçant SVG/CSS simplifié, pas de pixel art nouveau pour ces masters. Aucun élément tiers directement copié de Postknight.
 4. **Trois environnements seulement** : Sakura, Cyberpunk, Ombre. Le thème change décor / UI, pas l'identité des avatars.
 5. **Personnalisation réelle et testée** : deux avatars, coiffures / tenues / accessoires / guitares. Une planche concept ou un crop est **une référence, pas un asset en calques**.
-6. **Progression musicale au centre** : préserver quêtes, XP, gacha cosmétique, exercices, objectifs. Ne pas affirmer que le micro reconnaît réellement des notes si ce n'est pas démontré. Pas de tirages payants dans le MVP.
+6. **Progression musicale au centre** : préserver quêtes, XP, boutique cosmétique liée à la progression (pas de gacha, décision D-017), exercices, objectifs. Ne pas affirmer que le micro reconnaît réellement des notes si ce n'est pas démontré. Pas de tirages payants dans le MVP.
 
 ## Garde-fous de développement
 
