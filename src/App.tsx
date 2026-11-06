@@ -99,7 +99,7 @@ export function App() {
         {screen === 'grimoire' && <Grimoire />}
       </main>
 
-      <footer className="foot muted small">Guitar Leveling · v0.3 · Personnages : masters validés (statiques). Décors finaux et animations en production.</footer>
+      <footer className="foot muted small">Guitar Leveling · v0.7 · Personnages : masters validés (statiques). Décors finaux et animations en production.</footer>
 
       {themeOpen && (
         <div className="modal-back" onClick={() => setThemeOpen(false)}>
