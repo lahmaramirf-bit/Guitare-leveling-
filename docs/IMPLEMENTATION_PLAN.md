@@ -1,5 +1,7 @@
 # IMPLEMENTATION PLAN — Intégration progressive de la DA
 
+> **Mise à jour 2026-11-06** : pas de code préexistant (D-008). Les étapes S0–S2 et S6 « legacy » sont sans objet. Réalisé en v0.1 : équivalents de S3 (sauvegarde + export/import), S4 (configuration perso/thème, testés), S5 (portrait concept étiqueté) et thèmes. Reste : **S7 (rendu en calques), bloqué par les assets** (`art/BRIEFS_CHATGPT.md`).
+
 > Statut : **plan prêt, exécution bloquée sur la réception du code** (cf. `docs/BASELINE_AUDIT.md` §1).
 > Hypothèse de travail (à confirmer à l'audit) : l'artefact est un **composant React unique** (cas le plus fréquent des artefacts Claude) avec persistance via le stockage d'artefact. Si c'est du HTML/JS sans framework, la même architecture s'applique en modules ES — seuls les noms de fichiers changent. **Aucune migration de framework** (pas de Next/Flutter).
 

@@ -35,3 +35,8 @@ Une tâche n'est terminée que si : code source réel modifié (si pertinent), b
 - Code + tests uniquement après inspection du dépôt et lorsque des assets conformes sont disponibles.
 
 Lis d'abord `docs/01_PRODUCT_BRIEF.md`, `docs/02_ART_DIRECTION_LOCK.md`, `docs/03_IMPLEMENTATION_BACKLOG.md`, `docs/04_ASSET_SPEC.md` et `docs/05_ACCEPTANCE_GATES.md` dans ce pack (en tenant compte du préfixe `handoff/` s'il est rangé dans ce dossier).
+
+## État du projet (mis à jour 2026-11-06)
+
+- Le fondateur a confirmé qu'**aucun code antérieur n'existe** : l'app v0.1 est construite dans ce dépôt (Vite + React + TS, voir `README.md`, `docs/DECISION_LOG.md` D-008 à D-015). La règle « ne pas créer de nouvelle app » ne s'applique plus ; « préserver l'existant » s'applique désormais à cette v0.1 (tests `npm test` + `npm run e2e` à garder verts).
+- La DA est produite par le fondateur via ChatGPT à partir de `art/BRIEFS_CHATGPT.md` ; les images arrivent dans `art/incoming/`. Contrôler chaque image avant intégration et mettre à jour `docs/contracts/asset-manifest.json`.

@@ -1,13 +1,22 @@
 # Guitar Leveling
 
-RPG d'apprentissage de la guitare.
+RPG d'apprentissage réel de la guitare : chaque minute jouée fait progresser ton héros (XP, rangs E → S, quêtes, coffre du jour, invocation cosmétique, répertoire, journal, grimoire). Trois univers : Sakura, Cyberpunk, Ombre.
 
-**État au 2026-11-06 : ce dépôt ne contient pas encore le code de l'application.** Il contient :
+**Statut v0.1** : application web jouable en local, testée (unitaires + parcours Chromium desktop/mobile). Les personnages affichés sont des **illustrations concept** (badge « CONCEPT ») ; les tenues ne seront dessinées sur l'avatar qu'une fois les sprites en calques livrés (voir `art/BRIEFS_CHATGPT.md`). Non déployée publiquement.
 
-- `handoff/` — pack de passation (brief, DA approuvée, captures de l'app actuelle, démo `reference_only` à **ne pas** utiliser comme app).
-- `CLAUDE.md` — règles de pilotage pour Claude Code.
-- `docs/` — `BASELINE_AUDIT.md`, `IMPLEMENTATION_PLAN.md`, `DECISION_LOG.md`, `QA_REPORT.md`.
-- `docs/contracts/` — contrats `CharacterConfig`, `ThemeConfig` (3 thèmes) et manifeste d'assets (tous les sprites sont `missing`).
-- `scripts/validate_contracts.py` — contrôle des contrats (`python3 scripts/validate_contracts.py`).
+## Lancer
 
-Prochaine étape : déposer l'export du code de l'artefact dans `legacy-artifact/` (voir `docs/BASELINE_AUDIT.md` §1).
+```bash
+npm install
+npm run dev        # http://localhost:5173
+```
+
+Autres commandes : `npm test` (logique de jeu), `npm run build` (production dans `dist/`), `npm run e2e` (parcours navigateur, nécessite Playwright + Chromium, après `npm run build`), `npm run validate:contracts`.
+
+## Organisation
+- `src/game/` — logique pure et testée : niveaux, séances, quêtes, gacha, sauvegarde.
+- `src/screens/` — écrans ; `src/appearance/` — thèmes et portrait ; `src/audio/` — métronome.
+- `docs/contracts/` — contrats d'apparence (thèmes, configuration perso, manifeste d'assets).
+- `art/` — briefs ChatGPT et dépôt des images reçues (`art/incoming/`).
+- `handoff/` — pack de DA d'origine (références approuvées).
+- `docs/` — audit, plan, décisions, rapport QA.

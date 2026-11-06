@@ -3,7 +3,11 @@
 > Date : 2026-11-06 · Branche : `claude/hopeful-allen-8xgg1o` · Auteur : Claude Code (lead technique)
 > Légende de statut : **VÉRIFIÉ** (constaté par commande/fichier) · **CONSTATÉ SUR CAPTURE** (visible sur image, non prouvé dans le code) · **SUPPOSÉ** (hypothèse à confirmer) · **MANQUANT**.
 
-## 0. Verdict
+## ⚠️ Mise à jour 2026-11-06 (après échange avec le fondateur)
+
+Le fondateur confirme qu'**il n'existe aucun code** : les captures `existing-app` proviennent d'essais antérieurs et la DA a été produite avec ChatGPT. Le blocage GL-001 est donc levé par décision (D-008) : l'app v0.1 a été **construite dans ce dépôt** en reprenant les fonctions visibles sur les captures comme cahier des charges. Les §1 et §4 (R2, R3, R4) ci-dessous sont **historiques**. État actuel : voir `docs/QA_REPORT.md`.
+
+## 0. Verdict initial
 
 **GL-001 est BLOQUÉ : aucun code source de l'application Guitar Leveling n'est disponible.**
 

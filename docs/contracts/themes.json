@@ -1,23 +1,59 @@
 [
   {
-    "id": "sakura", "label": "Sakura", "subtitle": "Estampe japonaise · Zen · Pétales",
+    "id": "sakura",
+    "label": "Sakura",
+    "subtitle": "Estampe japonaise · Zen · Pétales",
     "tokensStatus": "provisional",
-    "tokens": { "bg": "#f5eee3", "surface": "#fffaf3", "ink": "#2b2230", "accent": "#c8102e", "accent2": "#2e4a7d", "accent3": "#e58fae" },
-    "background": { "status": "reference_only", "image": null, "reference": "handoff/assets/reference/art-and-three-themes-APPROVED.png" },
-    "legacyThemeIds": ["sakura", "moe_moe"]
+    "tokens": {
+      "bg": "#f5eee3",
+      "surface": "#fffaf3",
+      "ink": "#2b2230",
+      "accent": "#c8102e",
+      "accent2": "#2e4a7d",
+      "accent3": "#e58fae"
+    },
+    "background": {
+      "status": "reference_only",
+      "image": null,
+      "reference": "handoff/assets/reference/art-and-three-themes-APPROVED.png"
+    }
   },
   {
-    "id": "cyberpunk", "label": "Cyberpunk", "subtitle": "Ville néon · High-tech · Énergie",
+    "id": "cyberpunk",
+    "label": "Cyberpunk",
+    "subtitle": "Ville néon · High-tech · Énergie",
     "tokensStatus": "provisional",
-    "tokens": { "bg": "#0b0b14", "surface": "#15152a", "ink": "#f2f2f7", "accent": "#f5e400", "accent2": "#19e3f0", "accent3": "#ff2d78" },
-    "background": { "status": "reference_only", "image": null, "reference": "handoff/assets/reference/art-and-three-themes-APPROVED.png" },
-    "legacyThemeIds": ["cyberpunk", "arcade_8bit"]
+    "tokens": {
+      "bg": "#0b0b14",
+      "surface": "#15152a",
+      "ink": "#f2f2f7",
+      "accent": "#f5e400",
+      "accent2": "#19e3f0",
+      "accent3": "#ff2d78"
+    },
+    "background": {
+      "status": "reference_only",
+      "image": null,
+      "reference": "handoff/assets/reference/art-and-three-themes-APPROVED.png"
+    }
   },
   {
-    "id": "ombre", "label": "Ombre", "subtitle": "Scène de concert · Club · Ambiance sombre",
+    "id": "ombre",
+    "label": "Ombre",
+    "subtitle": "Scène de concert · Club · Ambiance sombre",
     "tokensStatus": "provisional",
-    "tokens": { "bg": "#120c1c", "surface": "#1f1530", "ink": "#efe8f7", "accent": "#8b5cf6", "accent2": "#ec4899", "accent3": "#f5c542" },
-    "background": { "status": "reference_only", "image": null, "reference": "handoff/assets/reference/art-and-three-themes-APPROVED.png" },
-    "legacyThemeIds": ["ombre", "manga"]
+    "tokens": {
+      "bg": "#120c1c",
+      "surface": "#1f1530",
+      "ink": "#efe8f7",
+      "accent": "#8b5cf6",
+      "accent2": "#ec4899",
+      "accent3": "#f5c542"
+    },
+    "background": {
+      "status": "reference_only",
+      "image": null,
+      "reference": "handoff/assets/reference/art-and-three-themes-APPROVED.png"
+    }
   }
 ]
