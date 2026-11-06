@@ -2,7 +2,7 @@ import { useGame } from '../ui/store';
 import { Bar, Crystal, Panel, fmt } from '../ui/bits';
 import { Avatar, AvatarPending } from '../avatar/Avatar';
 import { AmbienceCanvas } from '../appearance/AmbienceCanvas';
-import { WORLDS } from '../appearance/worlds';
+import { WORLDS, activePanel } from '../appearance/worlds';
 import { CANVAS } from '../avatar/manifest';
 import { effRank, levelOf, streak, xpFor } from '../game/engine';
 import { PLAN, QUESTS, RANKS, RANK_INDEX } from '../content';
@@ -21,7 +21,7 @@ export const AVATAR_BOX_H = 0.92;
 export function Hub({ go }: { go: (s: Screen) => void }) {
   const { save, today, p, crystals, celebrating } = useGame();
   const w = WORLDS[save.profile.theme];
-  const panel = w.panel;
+  const panel = activePanel(w.panel);
   const xp = p.c.xp;
   const L = levelOf(xp);
   const r = effRank(save, xp);
@@ -38,7 +38,7 @@ export function Hub({ go }: { go: (s: Screen) => void }) {
   return (
     <section className={`hub world-${w.id}`} aria-label="Accueil">
       <Panel className="char-panel">
-        <div className={`char-scene ${hasBg ? 'has-bg' : 'no-bg'}`} data-testid="hub-stage" data-panel-status={panel.status} data-ground={panel.groundY}>
+        <div className={`char-scene ${hasBg ? 'has-bg' : 'no-bg'}`} data-testid="hub-stage" data-panel-status={panel.status} data-panel-variant={panel.variant} data-ground={panel.groundY}>
           {hasBg
             ? <img className="char-bg" src={panel.file!} alt="" draggable={false} />
             : <div className="char-bg-provisional" style={{ backgroundImage: `url(${w.provisional})` }} aria-hidden="true" />}

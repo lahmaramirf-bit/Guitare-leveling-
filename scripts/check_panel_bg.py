@@ -5,6 +5,7 @@ le copie dans public/art/panel/ (jamais d'URL externe en production).
 Usage : python3 scripts/check_panel_bg.py art/incoming/panel_bg_sakura.png [--install]
 """
 import hashlib
+import re
 import shutil
 import sys
 from pathlib import Path
@@ -23,9 +24,10 @@ def main() -> int:
     src = Path(sys.argv[1])
     ok = True
     name = src.name
-    theme = name.removeprefix("panel_bg_").removesuffix(".png")
-    if theme not in THEMES or not name.startswith("panel_bg_"):
-        print(f"ÉCHEC  nom de fichier inattendu : {name} (attendu panel_bg_<sakura|cyberpunk|ombre>.png)")
+    stem = name.removeprefix("panel_bg_").removesuffix(".png")
+    theme, _, ver = stem.partition("_")
+    if theme not in THEMES or not name.startswith("panel_bg_") or (ver and not re.fullmatch(r"v\d+", ver)):
+        print(f"ÉCHEC  nom de fichier inattendu : {name} (attendu panel_bg_<sakura|cyberpunk|ombre>[_vN].png)")
         ok = False
     im = Image.open(src)
     print(f"Format {im.format}, mode {im.mode}, taille {im.size[0]}×{im.size[1]}")

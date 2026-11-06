@@ -45,3 +45,15 @@ Safari/iOS, Firefox, appareils Android réels ; lecteur d'écran ; performance d
 | `npm test` / `npm run e2e` / `validate_contracts.py` | 33/33 · 40/40 · 0 erreur — **PASS** |
 | Lisibilité « Niv. » sur cerisiers | défaut constaté puis corrigé (voile radial, D-029) |
 | Gate E | **PENDING** : Sakura candidat, en attente de validation du fondateur ; Cyberpunk/Ombre non commencés |
+
+## Lot v0.7.3 — comparatif Sakura V1/V2 (2026-11-06)
+| Commande / mesure | V1 | V2 |
+|---|---|---|
+| `check_panel_bg.py` | OK, contraste héros σ 36,8 | OK, contraste héros σ 42,3 |
+| Coin haut-gauche (niveau), luminance moyenne / σ | 151 / 62 (clair, chargé ; voile D-029 requis) | **74 / 13** (sombre, uni) |
+| Coin haut-droit (gemme), luminance moyenne / σ | **109 / 47** (ciel) | 147 / 56 (cerisiers clairs) |
+| Pieds (ordi / mobile) | 89,7 % / 90,4 %, sur plancher avec profondeur | 89,7 % / 90,4 %, sur l'arête d'un muret vu de face |
+| Personnage entier, fille et garçon, ordi et mobile | oui | oui |
+| Style vs masters | peint, cohérent | aplats, ciel en bandes (pixel art), rupture |
+| `npm test` / `npm run e2e` / contrats | 36/36 · 40/40 · 0 erreur — **PASS** (nouveau test `worlds.test.ts`) | |
+Captures : `art/previews/compare/`.

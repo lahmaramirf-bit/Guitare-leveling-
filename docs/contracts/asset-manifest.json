@@ -139,6 +139,17 @@
       "source": "ChatGPT, reçu en WebP 1400×620 et converti en PNG"
     },
     {
+      "id": "panel_bg_sakura_v2",
+      "path": "public/art/panel/panel_bg_sakura_v2.png",
+      "status": "candidate",
+      "width": 1400,
+      "height": 620,
+      "groundY": 0.9,
+      "sha256": "9066b21fef9ae3662852d98810b1a31afc6b5c411210a9ac188ebafabef04bcd",
+      "source": "ChatGPT, tiki-taka n°3, PNG natif",
+      "note": "variante QA uniquement (?panel=v2), non active par défaut"
+    },
+    {
       "id": "panel_bg_cyberpunk",
       "path": null,
       "status": "planned_missing",

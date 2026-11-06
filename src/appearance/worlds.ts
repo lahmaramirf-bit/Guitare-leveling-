@@ -20,6 +20,15 @@ export interface PanelBg {
   size: [number, number];
   /** ligne de sol, en fraction de la hauteur de l'image (pieds du personnage) */
   groundY: number;
+  /** autres versions candidates du même décor (comparaison QA, jamais affichées par défaut) */
+  variants?: Record<string, { status: PanelStatus; file: string; groundY: number }>;
+}
+
+/** Décor actif : la version par défaut, ou une variante demandée par `?panel=<id>` (QA uniquement). */
+export function activePanel(panel: PanelBg, search = typeof location !== 'undefined' ? location.search : ''): PanelBg & { variant: string } {
+  const id = new URLSearchParams(search).get('panel');
+  const v = id ? panel.variants?.[id] : undefined;
+  return v ? { ...panel, ...v, variant: id! } : { ...panel, variant: 'v1' };
 }
 
 export interface World {
@@ -43,7 +52,8 @@ export const WORLDS: Record<ThemeId, World> = {
     background: { status: 'planned_missing', desktop: null, mobile: null, expected: ['bg_sakura_desktop.png', 'bg_sakura_mobile.png'] },
     foreground: { status: 'planned_missing', file: null, expected: 'fg_sakura.png' },
     provisional: './concept/theme-sakura.jpg',
-    panel: { status: 'candidate', file: './art/panel/panel_bg_sakura.png', expected: 'panel_bg_sakura.png', size: [1400, 620], groundY: 0.9 }, ambience: 'petals',
+    panel: { status: 'candidate', file: './art/panel/panel_bg_sakura.png', expected: 'panel_bg_sakura.png', size: [1400, 620], groundY: 0.9,
+      variants: { v2: { status: 'candidate', file: './art/panel/panel_bg_sakura_v2.png', groundY: 0.9 } } }, ambience: 'petals',
     materials: 'bois clair, papier crème, cadres dorés, pétales',
   },
   cyberpunk: {

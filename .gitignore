@@ -6,3 +6,4 @@ e2e/out/
 art/chatgpt/*/pieces-jointes/*
 !art/chatgpt/*/pieces-jointes/gabarit_*.png
 art/incoming/*.png
+art/previews/compare/*/
