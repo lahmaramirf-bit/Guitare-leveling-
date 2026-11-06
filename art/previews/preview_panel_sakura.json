@@ -1,0 +1,83 @@
+{
+  "theme": "sakura",
+  "avatar": "girl",
+  "date": "2026-11-06T14:00:04.013Z",
+  "breakpoints": {
+    "mobile": "≤ 760 px : décor hauteur fixe 230 px, cadrage centré (côtés rognés)",
+    "desktop": "≥ 761 px : décor au ratio 1400:620"
+  },
+  "views": {
+    "desktop": {
+      "viewport": {
+        "width": 1280,
+        "height": 900
+      },
+      "panel": {
+        "x": 96,
+        "y": 166,
+        "w": 1088,
+        "h": 699
+      },
+      "scene": {
+        "x": 112,
+        "y": 182,
+        "w": 1056,
+        "h": 468
+      },
+      "avatarBox": {
+        "x": 468,
+        "y": 209,
+        "w": 344,
+        "h": 430
+      },
+      "avatarVisible": {
+        "x": 552,
+        "y": 239,
+        "w": 176,
+        "h": 363
+      },
+      "feetY": 602,
+      "feetInScene": 0.897,
+      "groundTarget": 0.9,
+      "panelStatus": "candidate",
+      "characterHeightPctOfScene": 77.6,
+      "fullyVisible": true
+    },
+    "mobile": {
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "panel": {
+        "x": 16,
+        "y": 96,
+        "w": 358,
+        "h": 490
+      },
+      "scene": {
+        "x": 28,
+        "y": 108,
+        "w": 334,
+        "h": 230
+      },
+      "avatarBox": {
+        "x": 110,
+        "y": 122,
+        "w": 169,
+        "h": 212
+      },
+      "avatarVisible": {
+        "x": 151,
+        "y": 137,
+        "w": 87,
+        "h": 179
+      },
+      "feetY": 316,
+      "feetInScene": 0.904,
+      "groundTarget": 0.9,
+      "panelStatus": "candidate",
+      "characterHeightPctOfScene": 77.8,
+      "fullyVisible": true
+    }
+  }
+}

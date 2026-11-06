@@ -36,3 +36,12 @@ Safari/iOS, Firefox, appareils Android réels ; lecteur d'écran ; performance d
 | `node e2e/preview-panel.mjs sakura` | captures + mesures produites, **avec décor provisoire** (`art/previews/*_PROVISOIRE.*`) |
 | `python3 scripts/check_panel_bg.py` | testé sur 2 fichiers factices (non versionnés) : accepte 1400×620 opaque, refuse mauvaise taille et transparence — PASS |
 | Intégration `panel_bg_sakura.png` | **BLOCKED** : fichier non reçu (absent du zip, lien Adobe → proxy 403) |
+
+## Lot v0.7.1 — décor Sakura candidat (2026-11-06)
+| Commande | Résultat |
+|---|---|
+| `python3 scripts/check_panel_bg.py art/incoming/panel_bg_sakura.png --install` | PNG 1400×620 opaque, contraste zone héros 36,8 (< 60) — **OK** |
+| `node e2e/preview-panel.mjs sakura` (fille et garçon) | personnage entier ; pieds à 89,7 % (ordinateur) / 90,4 % (mobile), sur le ponton ; mobile : cadrage central, torii et guitare de décor rognés (attendu) |
+| `npm test` / `npm run e2e` / `validate_contracts.py` | 33/33 · 40/40 · 0 erreur — **PASS** |
+| Lisibilité « Niv. » sur cerisiers | défaut constaté puis corrigé (voile radial, D-029) |
+| Gate E | **PENDING** : Sakura candidat, en attente de validation du fondateur ; Cyberpunk/Ombre non commencés |

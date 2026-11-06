@@ -537,3 +537,8 @@ code { font-family: var(--mono); font-size: .85em; }
 }
 .provisional-tag .t-short { display: none; }
 @media (max-width: 760px) { .provisional-tag .t-long { display: none; } .provisional-tag .t-short { display: inline; } }
+
+/* v0.7.1 — lisibilité du niveau sur un décor réel clair/chargé (ex. cerisiers de Sakura) */
+.char-scene.has-bg .char-level { padding: 8px 40px 18px 12px; left: 2px; top: 2px; border-radius: 0 0 60px 0;
+  background: radial-gradient(ellipse 100% 100% at 0 0, #1a0a2ecc 0%, #1a0a2e80 55%, transparent 100%);
+  text-shadow: 0 1px 2px #000, 0 2px 8px #000c; }

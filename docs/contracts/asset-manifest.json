@@ -6,7 +6,8 @@
     "ready_static": "PNG aplati affichable en entier ; ni calques ni rig",
     "reference_only": "planche concept : jamais rendue comme sprite",
     "planned_missing": "asset non créé : ne rien rendre, ne rien prétendre",
-    "approved": "couche de production validée par le fondateur (fichier requis)"
+    "approved": "couche de production validée par le fondateur (fichier requis)",
+    "candidate": "fichier reçu et intégré, en attente de validation artistique du fondateur"
   },
   "canvas": {
     "width": 1024,
@@ -125,5 +126,31 @@
       "provisional": "public/concept/theme-ombre.jpg (vignette de la planche approuvée, étiquetée « décor provisoire »)"
     }
   },
-  "note": "Seuls les deux masters statiques existent. Aucun rig, guitare, vêtement ni décor final n'est livré."
+  "note": "Seuls les deux masters statiques existent. Aucun rig, guitare, vêtement ni décor final n'est livré.",
+  "panelBackgrounds": [
+    {
+      "id": "panel_bg_sakura",
+      "path": "public/art/panel/panel_bg_sakura.png",
+      "status": "candidate",
+      "width": 1400,
+      "height": 620,
+      "groundY": 0.9,
+      "sha256": "e99bff546a203a81e624ee939d49a381a2e1aa3bbcaf56c012a80e19d14df44b",
+      "source": "ChatGPT, reçu en WebP 1400×620 et converti en PNG"
+    },
+    {
+      "id": "panel_bg_cyberpunk",
+      "path": null,
+      "status": "planned_missing",
+      "width": 1400,
+      "height": 620
+    },
+    {
+      "id": "panel_bg_ombre",
+      "path": null,
+      "status": "planned_missing",
+      "width": 1400,
+      "height": 620
+    }
+  ]
 }

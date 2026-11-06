@@ -43,7 +43,7 @@ export const WORLDS: Record<ThemeId, World> = {
     background: { status: 'planned_missing', desktop: null, mobile: null, expected: ['bg_sakura_desktop.png', 'bg_sakura_mobile.png'] },
     foreground: { status: 'planned_missing', file: null, expected: 'fg_sakura.png' },
     provisional: './concept/theme-sakura.jpg',
-    panel: { status: 'planned_missing', file: null, expected: 'panel_bg_sakura.png', size: [1400, 620], groundY: 0.9 }, ambience: 'petals',
+    panel: { status: 'candidate', file: './art/panel/panel_bg_sakura.png', expected: 'panel_bg_sakura.png', size: [1400, 620], groundY: 0.9 }, ambience: 'petals',
     materials: 'bois clair, papier crème, cadres dorés, pétales',
   },
   cyberpunk: {
