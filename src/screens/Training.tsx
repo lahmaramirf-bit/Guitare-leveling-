@@ -1,160 +1,170 @@
 import { useEffect, useRef, useState } from 'react';
-import { useGame, uid } from '../ui/store';
-import { Panel } from '../ui/bits';
-import { EXERCISES, CATEGORY_LABELS, exerciseById, type Exercise } from '../game/exercises';
-import { logSession } from '../game/state';
-import { sessionXp, MAX_SESSION_MINUTES } from '../game/sessions';
-import { cosmeticById } from '../game/cosmetics';
-import { titleForLevel } from '../game/levels';
+import { useGame } from '../ui/store';
+import { CheckItem, Panel, Tabs } from '../ui/bits';
+import { EXOS, QUESTS, XP, type QuestId } from '../content';
+import { effRank } from '../game/engine';
+import { questDescs } from '../game/daily';
+import * as A from '../game/actions';
 import { Metronome } from '../audio/metronome';
-import type { Quality } from '../game/types';
 
-type Phase = 'pick' | 'run' | 'finish';
+type Sub = 'session' | 'exos' | 'metro' | 'soon';
+const SESS: Record<number, [QuestId, number][]> = {
+  15: [['echauf', 2], ['arp', 3], ['gamme', 2], ['etude', 4], ['morceau', 4]],
+  30: [['echauf', 3], ['arp', 4], ['gamme', 4], ['lect', 2], ['etude', 7], ['morceau', 10]],
+  45: [['echauf', 3], ['arp', 5], ['gamme', 5], ['theo', 5], ['lect', 2], ['etude', 10], ['morceau', 15]],
+  60: [['echauf', 5], ['arp', 7], ['gamme', 7], ['theo', 6], ['lect', 5], ['etude', 12], ['morceau', 18]],
+};
+const EXCAT: [string, string][] = [['all', 'Tout'], ['mg', 'Main gauche'], ['md', 'Main droite'], ['coord', 'Coordination'], ['expr', 'Son et effets']];
 
-export function Training({ songId, clearSong }: { songId: string | null; clearSong: () => void }) {
-  const { state } = useGame();
-  const [phase, setPhase] = useState<Phase>(songId ? 'run' : 'pick');
-  const [exercise, setExercise] = useState<Exercise>(songId ? exerciseById('song_practice')! : EXERCISES[0]);
-  const [seconds, setSeconds] = useState(0);
-  const song = songId ? state.songs.find((s) => s.id === songId) ?? null : null;
-
-  const choose = (e: Exercise) => { setExercise(e); setSeconds(0); setPhase('run'); };
-  const reset = () => { setPhase('pick'); setSeconds(0); clearSong(); };
-
-  if (phase === 'pick') {
-    return (
-      <Panel title="Entraînement" aside={<span className="muted small">Choisis un exercice, joue, puis déclare honnêtement ta séance.</span>}>
-        <ul className="exercise-grid">
-          {EXERCISES.map((e) => (
-            <li key={e.id}>
-              <button className="exercise" onClick={() => choose(e)}>
-                <span className="exercise-cat">{CATEGORY_LABELS[e.category]}</span>
-                <span className="exercise-name">{e.name}</span>
-                <span className="exercise-desc">{e.description}</span>
-                <span className="exercise-meta">{e.suggestedMinutes} min conseillées{e.suggestedBpm ? ` · ${e.suggestedBpm} BPM` : ''}</span>
-              </button>
-            </li>
-          ))}
-        </ul>
-      </Panel>
-    );
-  }
-  if (phase === 'run') {
-    return <Runner exercise={exercise} songTitle={song?.title ?? null} seconds={seconds} setSeconds={setSeconds} onFinish={() => setPhase('finish')} onCancel={reset} />;
-  }
-  return <FinishForm exercise={exercise} songId={song?.id ?? null} seconds={seconds} onDone={reset} onBack={() => setPhase('run')} />;
-}
-
-function Runner({ exercise, songTitle, seconds, setSeconds, onFinish, onCancel }: {
-  exercise: Exercise; songTitle: string | null; seconds: number; setSeconds: (f: (n: number) => number) => void; onFinish: () => void; onCancel: () => void;
-}) {
-  const [running, setRunning] = useState(false);
-  const [bpm, setBpm] = useState(exercise.suggestedBpm ?? 80);
-  const [metroOn, setMetroOn] = useState(false);
-  const [beat, setBeat] = useState(-1);
-  const metro = useRef<Metronome | null>(null);
-
-  useEffect(() => {
-    if (!running) return;
-    const t = window.setInterval(() => setSeconds((n) => n + 1), 1000);
-    return () => window.clearInterval(t);
-  }, [running, setSeconds]);
-
-  useEffect(() => () => metro.current?.dispose(), []);
-  useEffect(() => { if (metro.current) metro.current.bpm = bpm; }, [bpm]);
-
-  const toggleMetro = () => {
-    metro.current ??= new Metronome();
-    const m = metro.current;
-    if (m.running) { m.stop(); setMetroOn(false); setBeat(-1); return; }
-    m.bpm = bpm;
-    m.onBeat = setBeat;
-    setMetroOn(m.start());
-  };
-
-  const finish = () => { metro.current?.stop(); setMetroOn(false); setRunning(false); onFinish(); };
-  const mm = String(Math.floor(seconds / 60)).padStart(2, '0');
-  const ss = String(seconds % 60).padStart(2, '0');
-
+export function Training() {
+  const [sub, setSub] = useState<Sub>('session');
   return (
     <div className="stack">
-      <Panel title={exercise.name} aside={<button className="link-btn" onClick={() => { metro.current?.stop(); onCancel(); }}>← Changer d’exercice</button>}>
-        {songTitle && <p className="tag">Morceau : {songTitle}</p>}
-        <p>{exercise.description}</p>
-        <ol className="howto">{exercise.howTo.map((h) => <li key={h}>{h}</li>)}</ol>
-      </Panel>
-      <div className="grid-2">
-        <Panel title="Chrono">
-          <div className="timer mono" aria-live="off">{mm}:{ss}</div>
-          <div className="row">
-            <button className="btn btn-primary" onClick={() => setRunning((r) => !r)}>{running ? 'Pause' : seconds ? 'Reprendre' : 'Démarrer'}</button>
-            <button className="btn btn-gold" onClick={finish} disabled={seconds < 1}>Terminer la séance</button>
-          </div>
-          <p className="muted small">Conseil : {exercise.suggestedMinutes} minutes.</p>
-        </Panel>
-        <Panel title="Métronome">
-          <div className="metro">
-            <div className="beats" aria-hidden="true">{[0, 1, 2, 3].map((i) => <span key={i} className={`dot ${beat === i ? 'on' : ''} ${i === 0 ? 'first' : ''}`} />)}</div>
-            <label className="bpm">
-              <span className="mono big">{bpm}</span> BPM
-              <input type="range" min={40} max={220} value={bpm} onChange={(e) => setBpm(Number(e.target.value))} aria-label="Tempo en BPM" />
-            </label>
-            <div className="row">
-              <button className="btn" onClick={() => setBpm((b) => Math.max(40, b - 4))} aria-label="Ralentir de 4 BPM">−4</button>
-              <button className="btn btn-primary" onClick={toggleMetro} aria-pressed={metroOn}>{metroOn ? 'Arrêter' : 'Lancer le clic'}</button>
-              <button className="btn" onClick={() => setBpm((b) => Math.min(220, b + 4))} aria-label="Accélérer de 4 BPM">+4</button>
-            </div>
-          </div>
-        </Panel>
-      </div>
+      <Tabs label="Entraînement" value={sub} onChange={setSub} items={[['session', 'Session guidée'], ['exos', 'Exercices'], ['metro', 'Métronome'], ['soon', 'Autres salles']]} />
+      {sub === 'session' && <Session />}
+      {sub === 'exos' && <Exercises />}
+      {sub === 'metro' && <MetronomePanel />}
+      {sub === 'soon' && <ComingSoon />}
     </div>
   );
 }
 
-function FinishForm({ exercise, songId, seconds, onDone, onBack }: { exercise: Exercise; songId: string | null; seconds: number; onDone: () => void; onBack: () => void }) {
-  const { state, today, update, toast } = useGame();
-  const [minutes, setMinutes] = useState(Math.max(1, Math.round(seconds / 60)));
-  const [bpm, setBpm] = useState<string>(exercise.suggestedBpm ? String(exercise.suggestedBpm) : '');
-  const [quality, setQuality] = useState<Quality>(2);
-  const [notes, setNotes] = useState('');
+const clock = (sec: number) => `${String(Math.floor(sec / 60)).padStart(2, '0')}:${String(Math.max(0, sec) % 60).padStart(2, '0')}`;
 
-  const submit = () => {
-    const o = logSession(state, { exerciseId: exercise.id, songId, minutes, bpm: bpm ? Number(bpm) : null, quality, notes }, new Date(), today, uid());
-    update(() => o.state);
-    toast(`+${o.xp} XP · +${o.crystals} cristaux`, 'ok');
-    if (o.levelAfter > o.levelBefore) toast(`Niveau ${o.levelAfter} ! Titre : ${titleForLevel(o.levelAfter)}`, 'gold');
-    for (const id of o.granted) toast(`Débloqué : ${cosmeticById(id)?.name}`, 'gold');
-    onDone();
+function beep() {
+  try {
+    const C = window.AudioContext ?? (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
+    const ctx = new C();
+    const o = ctx.createOscillator(), g = ctx.createGain();
+    o.frequency.value = 880; g.gain.setValueAtTime(0.25, ctx.currentTime); g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.4);
+    o.connect(g).connect(ctx.destination); o.start(); o.stop(ctx.currentTime + 0.4);
+    window.setTimeout(() => void ctx.close(), 600);
+  } catch { /* audio indisponible */ }
+}
+
+/** Session guidée : enchaîne les blocs avec un minuteur ; chaque bloc terminé valide la quête correspondante. */
+function Session() {
+  const { save, today, p, act } = useGame();
+  const [dur, setDur] = useState(30);
+  const blocks = SESS[dur];
+  const [idx, setIdx] = useState(0);
+  const [remain, setRemain] = useState(blocks[0][1] * 60);
+  const [running, setRunning] = useState(false);
+  const [skipped, setSkipped] = useState(false);
+  const [finished, setFinished] = useState(false);
+  const desc = questDescs(save, effRank(save, p.c.xp), today);
+
+  const reset = (d = dur) => { setIdx(0); setRemain(SESS[d][0][1] * 60); setRunning(false); setSkipped(false); setFinished(false); };
+  useEffect(() => { if (!running) return; const t = window.setInterval(() => setRemain((r) => r - 1), 1000); return () => window.clearInterval(t); }, [running]);
+
+  const advance = (completed: boolean) => {
+    const [qid] = blocks[idx];
+    if (completed) act((s) => A.sessionBlockDone(s, qid, today), save.days[today]?.q.includes(qid) ? undefined : `Bloc terminé : ${QUESTS.find((q) => q.id === qid)?.name}.`);
+    const wasSkipped = skipped || !completed;
+    if (!completed) setSkipped(true);
+    if (idx + 1 >= blocks.length) {
+      setFinished(true); setRunning(false);
+      if (!wasSkipped) act((s) => A.sessionComplete(s, today), 'Session guidée complète.');
+    } else { setIdx(idx + 1); setRemain(blocks[idx + 1][1] * 60); }
   };
+  useEffect(() => { if (running && remain <= 0) { beep(); advance(true); } }, [remain, running]); // eslint-disable-line react-hooks/exhaustive-deps
 
+  const [qid, min] = blocks[Math.min(idx, blocks.length - 1)];
+  const Q = QUESTS.find((q) => q.id === qid)!;
   return (
-    <Panel title="Bilan de la séance" aside={<button className="link-btn" onClick={onBack}>← Revenir au chrono</button>}>
-      <p className="notice">Validation <b>déclarative</b> : l’application ne reconnaît pas encore les notes jouées. Sois honnête, c’est ta progression réelle qui compte.</p>
-      <div className="form">
-        <label>Durée réelle (minutes)
-          <input type="number" min={1} max={MAX_SESSION_MINUTES} value={minutes} onChange={(e) => setMinutes(Math.max(1, Math.min(MAX_SESSION_MINUTES, Number(e.target.value) || 1)))} />
-        </label>
-        <label>Tempo atteint proprement (BPM, facultatif)
-          <input type="number" min={20} max={300} value={bpm} onChange={(e) => setBpm(e.target.value)} placeholder="—" />
-        </label>
-        <fieldset className="quality">
-          <legend>Propreté du jeu</legend>
-          {([1, 2, 3] as Quality[]).map((q) => (
-            <label key={q} className={quality === q ? 'sel' : ''}>
-              <input type="radio" name="quality" checked={quality === q} onChange={() => setQuality(q)} />
-              {q === 1 ? 'Difficile' : q === 2 ? 'Correct' : 'Propre'}
-            </label>
-          ))}
-        </fieldset>
-        <label className="full">Notes (score, passage difficile…)
-          <textarea rows={3} maxLength={500} value={notes} onChange={(e) => setNotes(e.target.value)} />
-        </label>
+    <Panel title="Session guidée" aside={<label className="inline">Durée <select value={dur} onChange={(e) => { const d = Number(e.target.value); setDur(d); reset(d); }} disabled={running}>{[15, 30, 45, 60].map((d) => <option key={d} value={d}>{d} min</option>)}</select></label>}>
+      {finished ? (
+        <div className="session-done"><div className="timer">✓</div><p><b>Session terminée.</b> {skipped ? 'Un bloc a été sauté : pas de bonus de session cette fois.' : `+${XP.sess} XP de bonus de session.`}</p><button className="btn btn-primary" onClick={() => reset()}>Recommencer</button></div>
+      ) : (
+        <>
+          <div className="session-steps" aria-hidden="true">{blocks.map(([b], i) => <i key={i} className={i < idx ? 'done' : i === idx ? 'cur' : ''} title={QUESTS.find((q) => q.id === b)?.name} />)}</div>
+          <p className="eyebrow">Bloc {idx + 1} / {blocks.length} · {min} min</p>
+          <h3>{Q.name}</h3>
+          <p>{desc[qid]}</p>
+          <div className="timer mono" data-testid="sess-clock">{clock(remain)}</div>
+          <div className="row">
+            <button className="btn btn-primary" onClick={() => setRunning((r) => !r)}>{running ? 'Pause' : idx === 0 && remain === blocks[0][1] * 60 ? 'Démarrer' : 'Reprendre'}</button>
+            <button className="btn btn-gold" onClick={() => advance(true)}>Bloc terminé</button>
+            <button className="btn" onClick={() => advance(false)}>Sauter le bloc</button>
+            <button className="btn btn-ghost" onClick={() => reset()}>Recommencer</button>
+          </div>
+        </>
+      )}
+      <p className="muted small">Le minuteur enchaîne les blocs avec un signal sonore. Chaque bloc terminé valide la quête du jour correspondante, et une session complète sans sauter de bloc rapporte {XP.sess} XP de plus.</p>
+    </Panel>
+  );
+}
+
+function Exercises() {
+  const { save, today, act } = useGame();
+  const [cat, setCat] = useState('all');
+  const done = save.days[today]?.ex ?? [];
+  return (
+    <Panel title="Bibliothèque d’exercices" aside={<span className="muted small">{Math.min(done.length, XP.exCap)} / {XP.exCap} exercices comptés aujourd’hui · {Math.min(done.length, XP.exCap) * XP.ex} XP</span>}>
+      <div className="subtabs">{EXCAT.map(([k, n]) => <button key={k} className={`subtab ${cat === k ? 'sel' : ''}`} aria-pressed={cat === k} onClick={() => setCat(k)}>{n} ({k === 'all' ? EXOS.length : EXOS.filter((x) => x.cat === k).length})</button>)}</div>
+      <div className="list">
+        {EXOS.filter((x) => cat === 'all' || x.cat === cat).map((x) => (
+          <CheckItem key={x.id} on={done.includes(x.id)} title={x.n} desc={x.how} xp={XP.ex}
+            meta={<><span className="chip small">Rang {x.r}</span>{typeof x.bpm === 'number' && <span className="chip small">♩ = {x.bpm}</span>}</>}
+            onToggle={() => act((s) => A.toggleExercise(s, x.id, today), done.includes(x.id) ? undefined : `${x.n} fait.`)} />
+        ))}
       </div>
-      <div className="row">
-        <span className="muted">Gain prévu : <b>{sessionXp(minutes, quality)} XP</b></span>
-        <span className="spacer" />
-        <button className="btn btn-gold" onClick={submit}>Valider la séance</button>
+      <p className="muted small">L’écoute des exercices (tablature jouée par une guitare de synthèse) arrive au lot 3.</p>
+    </Panel>
+  );
+}
+
+function MetronomePanel() {
+  const [bpm, setBpm] = useState(60);
+  const [bpb, setBpb] = useState(4);
+  const [on, setOn] = useState(false);
+  const [beat, setBeat] = useState(-1);
+  const m = useRef<Metronome | null>(null);
+  const taps = useRef<number[]>([]);
+  useEffect(() => () => m.current?.dispose(), []);
+  useEffect(() => { if (m.current) { m.current.bpm = bpm; m.current.beatsPerBar = bpb; } }, [bpm, bpb]);
+  const toggle = () => {
+    m.current ??= new Metronome();
+    if (m.current.running) { m.current.stop(); setOn(false); setBeat(-1); return; }
+    m.current.bpm = bpm; m.current.beatsPerBar = bpb; m.current.onBeat = setBeat;
+    setOn(m.current.start());
+  };
+  const tap = () => {
+    const t = performance.now();
+    taps.current = [...taps.current.filter((x) => t - x < 3000), t];
+    if (taps.current.length >= 2) { const iv = (taps.current[taps.current.length - 1] - taps.current[0]) / (taps.current.length - 1); setBpm(Math.max(30, Math.min(240, Math.round(60000 / iv)))); }
+  };
+  return (
+    <Panel title="Métronome">
+      <div className="metro">
+        <div className="beats" aria-hidden="true">{Array.from({ length: bpb }, (_, i) => <span key={i} className={`dot ${beat === i ? 'on' : ''} ${i === 0 ? 'first' : ''}`} />)}</div>
+        <label className="bpm"><span className="mono big">{bpm}</span> ♩ par minute
+          <input type="range" min={30} max={240} value={bpm} onChange={(e) => setBpm(Number(e.target.value))} aria-label="Tempo" />
+        </label>
+        <div className="row">
+          <button className="btn" onClick={() => setBpm((b) => Math.max(30, b - 4))}>−4</button>
+          <button className="btn btn-primary" onClick={toggle} aria-pressed={on}>{on ? 'Arrêter' : 'Lancer'}</button>
+          <button className="btn" onClick={() => setBpm((b) => Math.min(240, b + 4))}>+4</button>
+          <button className="btn" onClick={tap}>Tap</button>
+        </div>
+        <div className="row">{[2, 3, 4].map((n) => <button key={n} className={`btn ${bpb === n ? 'btn-gold' : ''}`} aria-pressed={bpb === n} onClick={() => setBpb(n)}>{n}/4</button>)}</div>
       </div>
+      <p className="muted small">Méthode : commence assez lent pour jouer sans aucune faute. 3 fois propre d’affilée → +4 au tempo. Une faute → reviens au tempo précédent. Note ton record dans le Journal. (Subdivisions, mesures muettes et accélérateur : lot 3.)</p>
+    </Panel>
+  );
+}
+
+function ComingSoon() {
+  const rooms = [
+    ['Manche', 'Nommer / trouver une note sur le manche, par zone.'], ['Portée', 'Lecture de notes sur la portée.'],
+    ['Oreille', 'Intervalles, accords, gammes, cadences, mélodies + notes de référence pour accorder.'], ['Rythme', 'Dictée rythmique sur 3 niveaux.'],
+    ['Gammes', 'Atlas des gammes sur le manche, écoute et partition.'], ['Accords', 'Dictionnaire d’accords et grilles à travailler.'],
+    ['Arpèges', 'Générateur d’arpèges (grille × motif) avec lecture en boucle.'], ['Jam', 'Accompagnement pour improviser, gamme conseillée.'],
+  ];
+  return (
+    <Panel title="Salles à venir (lot 3)">
+      <p>Ces salles du projet de base demandent une guitare de synthèse et l’affichage de partitions. Elles seront portées au lot 3, avec les mêmes règles d’XP (quiz : +{XP.quiz} XP par bonne réponse, plafond {XP.trainCap} XP/jour ; jam : {XP.jamMin} XP/min).</p>
+      <ul className="list-plain">{rooms.map(([t, d]) => <li key={t}><b>{t}</b> — <span className="muted">{d}</span></li>)}</ul>
     </Panel>
   );
 }

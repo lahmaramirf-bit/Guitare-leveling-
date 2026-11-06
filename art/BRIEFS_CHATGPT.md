@@ -52,7 +52,7 @@ Fichiers : `bg_sakura.png`, `bg_cyberpunk.png`, `bg_ombre.png` (+ en option une 
 ```
 Je joins le master [boy_base.png / girl_base.png]. Redessine EXACTEMENT le même personnage, même pose, même cadrage 1024 × 1280, même position, mais ne garde QUE [la coiffure « Mèches argentées » | le haut « Blouson Scène Urbaine » violet | …] : tout le reste (corps, visage, autres vêtements) doit être transparent.
 ```
-Fichiers : `<avatar>_<slot>_<id>.png`, ex. `boy_hair_silver.png`, `girl_top_urban_purple.png` (ids : voir `src/game/cosmetics.ts`).
+Fichiers : `<avatar>_<slot>_<id>.png`, ex. `boy_hair_silver.png`, `girl_top_urban_purple.png` (ids : voir `src/game/catalog.ts`).
 
 ---
 

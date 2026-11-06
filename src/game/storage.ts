@@ -1,98 +1,108 @@
-import type { GameState } from './types';
-import { newGame } from './state';
-import { COSMETICS, defaultLoadout, type AvatarId } from './cosmetics';
+import { emptySave, type Save } from './model';
+import { QUESTS, RANKS } from '../content';
+import { ITEM } from './catalog';
 
-export const STORAGE_KEY = 'guitar-leveling:save';
-export const BACKUP_KEY = 'guitar-leveling:save:backup';
+export const STORAGE_KEY = 'guitar-leveling:v2';
+export const BACKUP_KEY = 'guitar-leveling:v2:backup';
+/** Clé du projet de base : reprise automatique si présente dans ce navigateur. */
+export const LEGACY_KEY = 'guitar-leveling-v1';
 
-export interface KV {
-  getItem(k: string): string | null;
-  setItem(k: string, v: string): void;
-}
+export interface KV { getItem(k: string): string | null; setItem(k: string, v: string): void }
 
-const THEMES = ['sakura', 'cyberpunk', 'ombre'] as const;
+const obj = (v: unknown): Record<string, unknown> => (v && typeof v === 'object' && !Array.isArray(v) ? (v as Record<string, unknown>) : {});
+const QIDS = new Set(QUESTS.map((q) => q.id as string));
+const RIDS = new Set(RANKS.map((r) => r.id as string));
+const isDay = (k: string) => /^\d{4}-\d{2}-\d{2}$/.test(k);
+const nat = (v: unknown) => (typeof v === 'number' && Number.isFinite(v) && v > 0 ? Math.floor(v) : undefined);
+const strArr = (v: unknown) => (Array.isArray(v) ? v.filter((x): x is string => typeof x === 'string') : []);
 
 /**
- * Valide et répare une sauvegarde inconnue. Toute donnée invalide est
- * remplacée par la valeur par défaut, champ par champ (jamais d'écrasement global).
+ * Nettoie une sauvegarde (v2 ou format du projet de base) champ par champ.
+ * Une donnée invalide est ignorée, jamais l'ensemble de la sauvegarde.
  */
-export function sanitize(raw: unknown): GameState {
-  const base = newGame();
-  if (!raw || typeof raw !== 'object') return base;
-  const r = raw as Record<string, unknown>;
-  const num = (v: unknown, d: number) => (typeof v === 'number' && Number.isFinite(v) && v >= 0 ? Math.floor(v) : d);
-  const arr = <T>(v: unknown): T[] => (Array.isArray(v) ? (v as T[]) : []);
-  const app = (r.appearance ?? {}) as Record<string, unknown>;
-  const avatarId: AvatarId = app.avatarId === 'girl' ? 'girl' : 'boy';
-  const known = new Set(COSMETICS.map((c) => c.id));
-  const inventory = [...new Set([...base.inventory, ...arr<string>(r.inventory).filter((id) => known.has(id))])];
-  const loadout = { ...defaultLoadout(avatarId), ...((app.loadout as object) ?? {}) } as GameState['appearance']['loadout'];
-  for (const k of Object.keys(loadout) as (keyof typeof loadout)[]) {
-    const id = loadout[k];
-    if (id !== null && (typeof id !== 'string' || !inventory.includes(id))) loadout[k] = defaultLoadout(avatarId)[k];
+export function sanitize(raw: unknown): Save {
+  const r = obj(raw);
+  const s = emptySave();
+  for (const [k, v] of Object.entries(obj(r.days))) {
+    if (!isDay(k)) continue;
+    const d = obj(v);
+    const day: Save['days'][string] = { q: strArr(d.q).filter((x) => QIDS.has(x)) as Save['days'][string]['q'] };
+    for (const f of ['train', 'sr', 'jam', 'sess', 'pk'] as const) { const n = nat(d[f]); if (n) day[f] = n; }
+    for (const f of ['ex', 'rev'] as const) { const a = strArr(d[f]); if (a.length) day[f] = a; }
+    for (const f of ['urg', 'lb'] as const) if (typeof d[f] === 'string' && RIDS.has(d[f] as string)) day[f] = d[f] as never;
+    if (typeof d.lbt === 'string') day.lbt = d.lbt.slice(0, 120);
+    if (d.lbo) day.lbo = 1;
+    if (d.lbr) day.lbr = 1;
+    if (d.freeze) day.freeze = 1;
+    s.days[k] = day;
   }
-  return {
-    schemaVersion: 1,
-    createdAt: typeof r.createdAt === 'string' ? r.createdAt : base.createdAt,
-    profile: { name: typeof (r.profile as { name?: unknown })?.name === 'string' ? ((r.profile as { name: string }).name.slice(0, 24) || base.profile.name) : base.profile.name },
-    appearance: {
-      avatarId,
-      themeId: (THEMES as readonly string[]).includes(app.themeId as string) ? (app.themeId as GameState['appearance']['themeId']) : 'sakura',
-      loadout,
-    },
-    xp: num(r.xp, 0),
-    crystals: num(r.crystals, 0),
-    shards: num(r.shards, 0),
-    sessions: arr<GameState['sessions'][number]>(r.sessions).filter((x) => x && typeof x.day === 'string' && typeof x.minutes === 'number'),
-    songs: arr<GameState['songs'][number]>(r.songs).filter((x) => x && typeof x.title === 'string'),
-    inventory,
-    pity: num(r.pity, 0),
-    chestLastDay: typeof r.chestLastDay === 'string' ? r.chestLastDay : null,
-    claimedDaily: arr<string>(r.claimedDaily).filter((x) => typeof x === 'string'),
-    claimedMain: arr<string>(r.claimedMain).filter((x) => typeof x === 'string'),
-    onboarded: r.onboarded === true,
-  };
+  for (const [k, v] of Object.entries(obj(r.items))) if (v && /^[\w-]+$/.test(k)) s.items[k] = typeof v === 'string' && isDay(v) ? v : true;
+  for (const [k, v] of Object.entries(obj(r.weeks))) if (isDay(k)) s.weeks[k] = strArr(v).filter((x) => /^w\d+$/.test(x));
+  for (const [k, v] of Object.entries(obj(r.records))) {
+    const R = obj(v); const best = nat(R.best);
+    if (best) s.records[k] = { best, beats: nat(R.beats) ?? 1, date: typeof R.date === 'string' ? R.date : '' };
+  }
+  const peak = obj(r.meta).peak;
+  if (typeof peak === 'string' && RIDS.has(peak)) s.meta.peak = peak as Save['meta']['peak'];
+  for (const [k, v] of Object.entries(obj(r.rep))) {
+    const e = obj(v); const out: Save['rep'][string] = {};
+    if (typeof e.s === 'string' && ['', 'c', 'w', 'm'].includes(e.s)) out.s = e.s as Save['rep'][string]['s'];
+    if (Array.isArray(e.st)) out.st = e.st.filter((x): x is number => Number.isInteger(x) && x >= 0 && x < 8);
+    if (Array.isArray(e.lb)) out.lb = e.lb.filter((x): x is number => Number.isInteger(x) && x >= 0 && x < 3);
+    const t = nat(e.t); if (t) out.t = t;
+    const b = nat(e.bpm); if (b) out.bpm = b;
+    s.rep[k] = out;
+  }
+  for (const [k, v] of Object.entries(obj(r.repc))) {
+    const c = obj(v);
+    if (typeof c.t === 'string' && c.t.trim()) s.repc[k] = { t: c.t.slice(0, 80), by: typeof c.by === 'string' ? c.by.slice(0, 80) : '', g: typeof c.g === 'string' ? c.g : 'chanson', d: Math.min(5, Math.max(1, nat(c.d) ?? 1)) };
+  }
+  const p = obj(r.profile);
+  if (typeof p.name === 'string' && p.name.trim()) s.profile.name = p.name.slice(0, 24);
+  if (p.avatar === 'girl') s.profile.avatar = 'girl';
+  if (p.theme === 'cyberpunk' || p.theme === 'ombre' || p.theme === 'sakura') s.profile.theme = p.theme;
+  s.profile.onboarded = p.onboarded === true;
+  if (p.sfx === false) s.profile.sfx = false;
+  const sh = obj(r.shop);
+  s.shop.spent = nat(sh.spent) ?? 0;
+  s.shop.owned = strArr(sh.owned).filter((id) => ITEM[id] && ITEM[id].price !== undefined);
+  for (const [k, v] of Object.entries(obj(sh.equipped))) if (v === null || (typeof v === 'string' && ITEM[v])) (s.shop.equipped as Record<string, string | null>)[k] = v;
+  const inv = obj(sh.inv);
+  s.shop.inv = { c_scroll: nat(inv.c_scroll) ?? 0, c_key: nat(inv.c_key) ?? 0 };
+  return s;
 }
 
-export function load(kv: KV): GameState {
+export function load(kv: KV): { save: Save; migrated: boolean } {
   try {
     const txt = kv.getItem(STORAGE_KEY);
-    if (!txt) return newGame();
-    return sanitize(JSON.parse(txt));
+    if (txt) return { save: sanitize(JSON.parse(txt)), migrated: false };
+    const legacy = kv.getItem(LEGACY_KEY);
+    if (legacy) return { save: sanitize(JSON.parse(legacy)), migrated: true };
   } catch {
-    // Sauvegarde corrompue : on la met de côté au lieu de la perdre.
-    try {
-      const txt = kv.getItem(STORAGE_KEY);
-      if (txt) kv.setItem(BACKUP_KEY + ':corrupt:' + Date.now(), txt);
-    } catch { /* stockage indisponible */ }
-    return newGame();
+    try { const txt = kv.getItem(STORAGE_KEY); if (txt) kv.setItem(BACKUP_KEY + ':corrupt:' + Date.now(), txt); } catch { /* stockage indisponible */ }
   }
+  return { save: emptySave(), migrated: false };
 }
 
-export function save(kv: KV, s: GameState): boolean {
-  try {
-    kv.setItem(STORAGE_KEY, JSON.stringify(s));
-    return true;
-  } catch {
-    return false;
-  }
+export function save(kv: KV, s: Save): boolean {
+  try { kv.setItem(STORAGE_KEY, JSON.stringify(s)); return true; } catch { return false; }
 }
 
-export function exportJson(s: GameState): string {
+export function exportJson(s: Save): string {
   return JSON.stringify({ app: 'guitar-leveling', exportedAt: new Date().toISOString(), save: s }, null, 2);
 }
 
-export function importJson(kv: KV, txt: string, current: GameState): GameState {
-  const parsed = JSON.parse(txt);
-  const data = parsed && typeof parsed === 'object' && 'save' in parsed ? parsed.save : parsed;
-  if (!data || typeof data !== 'object' || (data as { schemaVersion?: unknown }).schemaVersion !== 1) {
-    throw new Error('Fichier de sauvegarde non reconnu.');
-  }
+/** Accepte un export v2 OU l'état du projet de base ({days, items, weeks, …}). */
+export function importJson(kv: KV, txt: string, current: Save): Save {
+  const parsed = obj(JSON.parse(txt));
+  const data = 'save' in parsed ? obj(parsed.save) : parsed;
+  if (!('days' in data) || !('items' in data)) throw new Error('Fichier de sauvegarde non reconnu.');
   try { kv.setItem(BACKUP_KEY, JSON.stringify(current)); } catch { /* ignore */ }
-  return sanitize(data);
+  const s = sanitize(data);
+  s.profile.onboarded = true;
+  return s;
 }
 
-/** Stockage du navigateur, avec repli mémoire si indisponible (navigation privée…). */
 export function browserKV(): KV {
   try {
     const t = '__gl_test__';

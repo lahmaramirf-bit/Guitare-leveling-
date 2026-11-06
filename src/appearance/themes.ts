@@ -1,5 +1,5 @@
 import themesJson from '../../docs/contracts/themes.json';
-import type { ThemeId } from '../game/types';
+import type { ThemeId } from '../game/model';
 
 export interface ThemeConfig {
   id: ThemeId;

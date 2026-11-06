@@ -1,4 +1,4 @@
-import type { AvatarId } from '../game/cosmetics';
+import type { AvatarId } from '../game/model';
 
 /**
  * Portrait du héros. Tant qu'aucun sprite multicouche n'est livré
