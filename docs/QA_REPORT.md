@@ -71,3 +71,13 @@ Captures : `art/previews/compare/`.
 | Écart moyen V1→V3 | — | 41,8/255 : **recréation**, pas une retouche locale |
 | `references/panel_bg_sakura_v1_original.png` (ChatGPT) vs notre V1 | écart 3,0/255 : même image, notre copie vient du WebP ; non remplacée sans accord | |
 | `npm test` / `npm run e2e` / contrats | 36/36 · 40/40 · 0 erreur — **PASS** | |
+
+## Lot v0.8 — parcours de pratique (2026-11-06)
+| Commande | Résultat |
+|---|---|
+| Audit Playwright avant correction | séance 02:57, puis onglet Métronome, puis retour : **03:00** (perdue) ; rechargement : perdue ; aucun temps enregistré |
+| `npm test` | **42/42** (5 fichiers, dont `src/practice/session.test.ts` : horloge, pause, arrière-plan, stockage corrompu, plafond, temps sans effet sur l'XP), parité OK |
+| `npm run e2e` | **47/47** (7 nouveaux : décompte, séance conservée après l'onglet Métronome, métronome intégré, « Reprendre » après rechargement, reprise au même point, temps enregistré, bilan) |
+| `validate_contracts.py` / `typecheck` | 0 erreur |
+| Captures | `docs/qa/v08/` : choix, séance en cours, accueil « Reprendre », bilan ; mobile 390 px et ordinateur 1280 px |
+| Non testé | Safari/iOS, Firefox, appareil réel ; Web Audio avec le bouton silencieux iOS |

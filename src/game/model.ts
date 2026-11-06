@@ -17,6 +17,8 @@ export interface Day {
   jam?: number;
   /** sessions guidées complètes */
   sess?: number;
+  /** secondes de pratique chronométrée (séance guidée). Suivi seulement : n'entre pas dans le calcul d'XP */
+  prac?: number;
   /** Limit Break réussi (rang du défi) + titre */
   lb?: RankId;
   lbt?: string;

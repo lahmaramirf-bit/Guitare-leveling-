@@ -27,7 +27,7 @@ export function sanitize(raw: unknown): Save {
     if (!isDay(k)) continue;
     const d = obj(v);
     const day: Save['days'][string] = { q: strArr(d.q).filter((x) => QIDS.has(x)) as Save['days'][string]['q'] };
-    for (const f of ['train', 'sr', 'jam', 'sess', 'pk'] as const) { const n = nat(d[f]); if (n) day[f] = n; }
+    for (const f of ['train', 'sr', 'jam', 'sess', 'pk', 'prac'] as const) { const n = nat(d[f]); if (n) day[f] = n; }
     for (const f of ['ex', 'rev'] as const) { const a = strArr(d[f]); if (a.length) day[f] = a; }
     for (const f of ['urg', 'lb'] as const) if (typeof d[f] === 'string' && RIDS.has(d[f] as string)) day[f] = d[f] as never;
     if (typeof d.lbt === 'string') day.lbt = d.lbt.slice(0, 120);

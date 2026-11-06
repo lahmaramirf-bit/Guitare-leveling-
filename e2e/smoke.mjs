@@ -88,9 +88,29 @@ try {
 
   // Entraînement : session guidée 15 min complète
   await page.getByRole('button', { name: /Entraînement/ }).first().click();
-  await page.getByLabel('Durée').selectOption('15');
+  await page.getByRole('radio', { name: '15 min' }).click();
+  await page.getByTestId('sess-start').click();
+  await page.waitForTimeout(2300);
+  const clockA = await page.getByTestId('sess-clock').textContent();
+  check('séance : le minuteur décompte', clockA !== '02:00', clockA);
+  await page.getByRole('tab', { name: 'Métronome' }).click().catch(() => page.getByRole('button', { name: 'Métronome', exact: true }).click());
+  await page.getByRole('tab', { name: 'Session guidée' }).click().catch(() => page.getByRole('button', { name: 'Session guidée', exact: true }).click());
+  const clockB = await page.getByTestId('sess-clock').textContent();
+  check('séance conservée après passage par l’onglet Métronome', clockB <= clockA && clockB !== '02:00', `${clockA} → ${clockB}`);
+  check('métronome intégré à la séance', await page.locator('.inline-metro [data-testid=metro-bpm]').count() === 1);
+  await page.reload();
+  await page.getByRole('button', { name: /Accueil/ }).first().click();
+  check('accueil : « Reprendre ma séance » après rechargement', await page.getByTestId('hub-resume').count() === 1);
+  await page.getByTestId('hub-resume').click();
+  const clockC = await page.getByTestId('sess-clock').textContent();
+  check('séance reprise au même point après rechargement', clockC !== '02:00', clockC);
   for (let i = 0; i < 5; i++) await page.getByRole('button', { name: 'Bloc terminé' }).click();
-  check('session guidée complète (+bonus)', (await saved()).days[Object.keys((await saved()).days)[0]].sess === 1);
+  const sd = await saved(); const dd = sd.days[Object.keys(sd.days)[0]];
+  check('session guidée complète (+bonus)', dd.sess === 1);
+  check('temps de pratique enregistré', (dd.prac ?? 0) >= 2, `${dd.prac}s`);
+  check('bilan de séance affiché', await page.getByTestId('sess-recap').isVisible());
+  await page.screenshot({ path: `${OUT}/09-bilan-seance.png` });
+  await page.getByRole('button', { name: 'Nouvelle séance' }).click();
 
   // Journal : record + révision d'ombre
   await page.getByRole('button', { name: /Journal/ }).first().click();

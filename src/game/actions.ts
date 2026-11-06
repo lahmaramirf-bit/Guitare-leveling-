@@ -164,5 +164,9 @@ export const sessionBlockDone = (s: Save, id: QuestId, today: string) =>
 /** Session guidée complète sans bloc sauté : +50 XP (2 par jour max). */
 export const sessionComplete = (s: Save, today: string) =>
   commit(s, (d) => { const x = day(d, today); x.sess = (x.sess ?? 0) + 1; });
+/** Ajoute du temps de pratique chronométré au jour (suivi, sans effet sur l'XP). Plafond de sécurité : 12 h/jour. */
+export const addPractice = (s: Save, seconds: number, today: string) =>
+  commit(s, (d) => { const x = day(d, today); const add = Math.max(0, Math.round(seconds)); if (add) x.prac = Math.min(43_200, (x.prac ?? 0) + add); });
+export const practiceSeconds = (s: Save, date: string) => s.days[date]?.prac ?? 0;
 export const toggleExercise = (s: Save, id: string, today: string) =>
   commit(s, (d) => { const x = day(d, today); toggle((x.ex ??= []), id); });

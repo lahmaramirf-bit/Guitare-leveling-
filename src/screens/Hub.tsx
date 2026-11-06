@@ -11,6 +11,9 @@ import { equipped } from '../game/actions';
 import { currentSong } from '../game/daily';
 import { ITEM } from '../game/catalog';
 import type { Screen } from '../App';
+import { peekSession } from '../practice/useSession';
+import { blocksOf, fmtMinutes } from '../practice/session';
+import { practiceSeconds } from '../game/actions';
 
 /** Hauteur de la boîte avatar, en fraction de la hauteur du décor. */
 export const AVATAR_BOX_H = 0.92;
@@ -34,6 +37,8 @@ export function Hub({ go }: { go: (s: Screen) => void }) {
   const sk = streak(save, today);
   const song = currentSong(save);
   const steps = song ? save.rep[song.id]?.st?.length ?? 0 : 0;
+  const live = (() => { const x = peekSession(); return x && x.date === today && !x.finished ? x : null; })();
+  const pracToday = practiceSeconds(save, today);
   const hasBg = panel.status !== 'planned_missing' && !!panel.file;
   // Pieds du personnage sur la ligne de sol du décor : bas de la boîte = sol + marge sous les pieds du canevas.
   const boxBottom = (1 - panel.groundY) * 100 - ((CANVAS.height - CANVAS.groundY) / CANVAS.height) * AVATAR_BOX_H * 100;
@@ -80,7 +85,10 @@ export function Hub({ go }: { go: (s: Screen) => void }) {
 
       <Panel title="Pratiquer aujourd’hui">
         <div className="practice">
-          <button className="btn btn-primary btn-big" onClick={() => go('entrainement')}>S’entraîner · session guidée ♪</button>
+          {live
+            ? <button className="btn btn-primary btn-big" data-testid="hub-resume" onClick={() => go('entrainement')}>Reprendre ma séance · bloc {live.idx + 1} / {blocksOf(live).length} ♪</button>
+            : <button className="btn btn-primary btn-big" onClick={() => go('entrainement')}>S’entraîner · session guidée ♪</button>}
+          {pracToday > 0 && <p className="small muted" data-testid="hub-practice">Pratique chronométrée aujourd’hui : <b>{fmtMinutes(pracToday * 1000)}</b></p>}
           <button className="practice-row" onClick={() => go('quetes')}>
             <span><b>Quêtes du jour</b><span className="small muted">≈ 38 min · 5 sur 7 gardent la série</span></span>
             <b className="mono">{done} / {QUESTS.length}</b>
