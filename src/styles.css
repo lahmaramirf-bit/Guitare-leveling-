@@ -542,3 +542,8 @@ code { font-family: var(--mono); font-size: .85em; }
 .char-scene.has-bg .char-level { padding: 8px 40px 18px 12px; left: 2px; top: 2px; border-radius: 0 0 60px 0;
   background: radial-gradient(ellipse 100% 100% at 0 0, #1a0a2ecc 0%, #1a0a2e80 55%, transparent 100%);
   text-shadow: 0 1px 2px #000, 0 2px 8px #000c; }
+
+/* Comparaison de décors candidats (disparaît dès qu'un décor est approuvé) */
+.variant-switch { position: absolute; left: 10px; bottom: 10px; z-index: 4; display: flex; gap: 2px; padding: 2px; border-radius: 6px; background: #000a; }
+.variant-switch button { font: 700 .72rem/1 system-ui, sans-serif; letter-spacing: .06em; color: #fff; background: transparent; border: 0; border-radius: 4px; padding: 6px 10px; cursor: pointer; min-height: 28px; }
+.variant-switch button.sel { background: #fff; color: #222; }

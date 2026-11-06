@@ -1,8 +1,9 @@
+import { useState } from 'react';
 import { useGame } from '../ui/store';
 import { Bar, Crystal, Panel, fmt } from '../ui/bits';
 import { Avatar, AvatarPending } from '../avatar/Avatar';
 import { AmbienceCanvas } from '../appearance/AmbienceCanvas';
-import { WORLDS, activePanel } from '../appearance/worlds';
+import { WORLDS, activePanel, panelFromUrl } from '../appearance/worlds';
 import { CANVAS } from '../avatar/manifest';
 import { effRank, levelOf, streak, xpFor } from '../game/engine';
 import { PLAN, QUESTS, RANKS, RANK_INDEX } from '../content';
@@ -21,7 +22,9 @@ export const AVATAR_BOX_H = 0.92;
 export function Hub({ go }: { go: (s: Screen) => void }) {
   const { save, today, p, crystals, celebrating } = useGame();
   const w = WORLDS[save.profile.theme];
-  const panel = activePanel(w.panel);
+  const [pick, setPick] = useState<string | null>(panelFromUrl);
+  const panel = activePanel(w.panel, pick);
+  const variantIds = w.panel.variants && w.panel.status !== 'approved' ? ['v1', ...Object.keys(w.panel.variants)] : [];
   const xp = p.c.xp;
   const L = levelOf(xp);
   const r = effRank(save, xp);
@@ -50,6 +53,13 @@ export function Hub({ go }: { go: (s: Screen) => void }) {
           </div>
           <div className="char-level"><span className="lv-label">Niv.</span> <span className="lv-num" data-testid="level">{L}</span><div className="lv-title">{r.title}</div></div>
           <div className={`rank-gem small rank-${r.id}`} title={`Rang ${r.id} — ${r.name}`}><span>{r.id === 'N' ? 'S+' : r.id}</span></div>
+          {variantIds.length > 1 && (
+            <div className="variant-switch" role="group" aria-label="Comparer les versions du décor">
+              {variantIds.map((id) => (
+                <button key={id} type="button" aria-pressed={panel.variant === id} className={panel.variant === id ? 'sel' : ''} onClick={() => setPick(id)} data-testid={`panel-${id}`}>{id.toUpperCase()}</button>
+              ))}
+            </div>
+          )}
           {panel.status === 'candidate' && <span className="provisional-tag"><span className="t-long">Décor candidat · à valider</span><span className="t-short">Candidat</span></span>}
           {panel.status === 'planned_missing' && <span className="provisional-tag" title={`Fichier attendu : ${panel.expected}`}><span className="t-long">Décor provisoire · {w.name}</span><span className="t-short">Provisoire</span></span>}
         </div>

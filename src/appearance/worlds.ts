@@ -24,9 +24,15 @@ export interface PanelBg {
   variants?: Record<string, { status: PanelStatus; file: string; groundY: number }>;
 }
 
-/** Décor actif : la version par défaut, ou une variante demandée par `?panel=<id>` (QA uniquement). */
-export function activePanel(panel: PanelBg, search = typeof location !== 'undefined' ? location.search : ''): PanelBg & { variant: string } {
-  const id = new URLSearchParams(search).get('panel');
+/** Variante demandée dans l'adresse : `?panel=v2`, accepté aussi après le `#` (ex. `#/hub?panel=v2`). */
+export function panelFromUrl(href = typeof location !== 'undefined' ? location.href : ''): string | null {
+  const m = /[?&]panel=([a-z0-9]+)/i.exec(href);
+  return m ? m[1].toLowerCase() : null;
+}
+
+/** Décor actif : la version par défaut (v1), ou une variante candidate (comparaison, jamais par défaut). */
+export function activePanel(panel: PanelBg, search: string | null = panelFromUrl()): PanelBg & { variant: string } {
+  const id = search && search.includes('panel=') ? panelFromUrl(search) : search;
   const v = id ? panel.variants?.[id] : undefined;
   return v ? { ...panel, ...v, variant: id! } : { ...panel, variant: 'v1' };
 }
