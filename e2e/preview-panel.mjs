@@ -29,6 +29,7 @@ try {
     await page.goto(URL + (variant ? `?panel=${variant}` : '') + '#/hub');
     await page.waitForLoadState('networkidle');
     await wait(400);
+    await page.addStyleTag({ content: '.variant-switch{display:none!important}' }); // outil de QA, absent des captures
     const m = await page.evaluate((bbox) => {
       const r = (el) => { const b = el.getBoundingClientRect(); return { x: Math.round(b.left), y: Math.round(b.top + scrollY), w: Math.round(b.width), h: Math.round(b.height) }; };
       const scene = document.querySelector('[data-testid="hub-stage"]');

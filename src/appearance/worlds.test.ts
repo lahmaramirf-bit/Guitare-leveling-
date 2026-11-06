@@ -15,9 +15,11 @@ describe('décor du panneau (variantes)', () => {
   it('aucune version n’est approuvée sans validation du fondateur', () => {
     expect(WORLDS.sakura.panel.status).toBe('candidate');
     expect(WORLDS.sakura.panel.variants?.v2.status).toBe('candidate');
+    expect(WORLDS.sakura.panel.variants?.v3.status).toBe('candidate');
+    expect(activePanel(WORLDS.sakura.panel, '?panel=v3').file).toBe('./art/panel/panel_bg_sakura_v3.png');
   });
   it('les fichiers référencés existent en local (pas d’URL externe)', () => {
-    for (const f of [WORLDS.sakura.panel.file!, WORLDS.sakura.panel.variants!.v2.file]) {
+    for (const f of [WORLDS.sakura.panel.file!, ...Object.values(WORLDS.sakura.panel.variants!).map((v) => v.file)]) {
       expect(f.startsWith('./art/panel/')).toBe(true);
       expect(existsSync('public/' + f.slice(2))).toBe(true);
     }

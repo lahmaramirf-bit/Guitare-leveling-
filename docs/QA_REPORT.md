@@ -57,3 +57,17 @@ Safari/iOS, Firefox, appareils Android réels ; lecteur d'écran ; performance d
 | Style vs masters | peint, cohérent | aplats, ciel en bandes (pixel art), rupture |
 | `npm test` / `npm run e2e` / contrats | 36/36 · 40/40 · 0 erreur — **PASS** (nouveau test `worlds.test.ts`) | |
 Captures : `art/previews/compare/`.
+
+## Lot v0.7.4 — comparatif Sakura V1/V3 (2026-11-06)
+| Mesure (luminance moyenne / σ) | V1 | V3 |
+|---|---|---|
+| Coin du niveau, ordinateur (x 0–420, y 0–170) | 151 / 62 | **98 / 44** |
+| Coin du niveau, **mobile** (x 252–560, y 0–150) | 165 / 51 | 121 / 41 (encore clair) |
+| Gemme, mobile (x 1000–1148, y 0–150) | 165 / 26 | **140 / 26** |
+| Zone du héros (`check_panel_bg`) | σ 36,8 | **σ 31,7** |
+| Ponton (y 520–620) | 111 / 38 | 106 / 30, plus profond (y ≈ 518–620) |
+| Pieds (ordi / mobile) | 89,7 % / 90,4 % | 89,7 % / 90,4 %, au milieu du ponton |
+| Personnage entier, 2 avatars × 2 formats | oui | oui |
+| Écart moyen V1→V3 | — | 41,8/255 : **recréation**, pas une retouche locale |
+| `references/panel_bg_sakura_v1_original.png` (ChatGPT) vs notre V1 | écart 3,0/255 : même image, notre copie vient du WebP ; non remplacée sans accord | |
+| `npm test` / `npm run e2e` / contrats | 36/36 · 40/40 · 0 erreur — **PASS** | |

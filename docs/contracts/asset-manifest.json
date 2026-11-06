@@ -150,6 +150,17 @@
       "note": "variante QA uniquement (?panel=v2), non active par défaut"
     },
     {
+      "id": "panel_bg_sakura_v3",
+      "path": "public/art/panel/panel_bg_sakura_v3.png",
+      "status": "candidate",
+      "width": 1400,
+      "height": 620,
+      "groundY": 0.9,
+      "sha256": "d70c95ef262d4193c5017462a456bb9b7c4abeeacbb2ac0cdc164433ca983b2d",
+      "source": "ChatGPT, tiki-taka n°5, PNG natif ; recréation inspirée de V1 (pas une retouche)",
+      "note": "variante QA (?panel=v3 ou bouton V3), non active par défaut"
+    },
+    {
       "id": "panel_bg_cyberpunk",
       "path": null,
       "status": "planned_missing",

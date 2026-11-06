@@ -547,3 +547,4 @@ code { font-family: var(--mono); font-size: .85em; }
 .variant-switch { position: absolute; left: 10px; bottom: 10px; z-index: 4; display: flex; gap: 2px; padding: 2px; border-radius: 6px; background: #000a; }
 .variant-switch button { font: 700 .72rem/1 system-ui, sans-serif; letter-spacing: .06em; color: #fff; background: transparent; border: 0; border-radius: 4px; padding: 6px 10px; cursor: pointer; min-height: 28px; }
 .variant-switch button.sel { background: #fff; color: #222; }
+@media (max-width: 760px) { .variant-switch { left: 6px; bottom: 6px; } .variant-switch button { padding: 4px 7px; min-height: 24px; font-size: .64rem; } }
