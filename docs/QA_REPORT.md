@@ -81,3 +81,4 @@ Captures : `art/previews/compare/`.
 | `validate_contracts.py` / `typecheck` | 0 erreur |
 | Captures | `docs/qa/v08/` : choix, séance en cours, accueil « Reprendre », bilan ; mobile 390 px et ordinateur 1280 px |
 | Non testé | Safari/iOS, Firefox, appareil réel ; Web Audio avec le bouton silencieux iOS |
+| Toucher le personnage (v0.8) | unitaires 44/44 (doigtés justes, master conservé sans art) ; E2E **49/49** (accord affiché, master inchangé) ; amplitude des cordes générées mesurée dans Chromium = 1,00 (son produit) ; **non écouté sur appareil réel** |

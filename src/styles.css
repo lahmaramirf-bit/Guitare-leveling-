@@ -567,3 +567,16 @@ code { font-family: var(--mono); font-size: .85em; }
 /* Mobile : au plus 2 notifications visibles pour ne pas masquer l'écran (les plus récentes) */
 @media (max-width: 760px) { .toasts .toast:nth-last-child(n+3) { display: none; } }
 a.btn { text-decoration: none; color: inherit; display: inline-flex; align-items: center; justify-content: center; }
+
+/* v0.8 — toucher le personnage : il joue un accord (son synthétisé + notes) */
+button.hub-hero { background: none; border: 0; padding: 0; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+button.hub-hero:focus-visible { outline: 3px solid #fff; outline-offset: -6px; border-radius: 12px; }
+.strum-fx { position: absolute; left: 50%; top: 38%; width: 0; height: 0; pointer-events: none; z-index: 5; }
+.chord-name { position: absolute; left: 34px; top: -54px; padding: 3px 10px; border-radius: 999px; background: #000b; color: #fff; font: 800 1rem/1.2 system-ui, sans-serif; animation: gl-chord .9s ease-out forwards; white-space: nowrap; }
+.strum-fx .note { position: absolute; left: 0; top: 0; font-style: normal; font-size: 1.6rem; color: #fff; text-shadow: 0 2px 6px #000a; animation: gl-note .9s ease-out forwards; }
+.strum-fx .n1 { animation-delay: .08s; --dx: -38px; }
+.strum-fx .n2 { animation-delay: .16s; --dx: 30px; }
+.strum-fx .n0 { --dx: 52px; }
+@keyframes gl-note { from { opacity: 0; transform: translate(0, 10px) scale(.7); } 25% { opacity: 1; } to { opacity: 0; transform: translate(var(--dx, 40px), -70px) scale(1.1); } }
+@keyframes gl-chord { from { opacity: 0; transform: translateY(6px); } 20% { opacity: 1; transform: none; } 80% { opacity: 1; } to { opacity: 0; } }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }

@@ -86,6 +86,11 @@ try {
   await page.screenshot({ path: `${OUT}/03-fiche-morceau.png` });
   await page.getByRole('button', { name: 'Fermer' }).click();
 
+  // Accueil : toucher le personnage → accord + notes
+  await page.getByRole('button', { name: /Accueil/ }).first().click();
+  await page.getByTestId('hero-play').click();
+  check('toucher le personnage joue un accord (retour visuel)', await page.locator('.strum-fx .chord-name').count() === 1);
+  check('le master reste affiché tant que l’art « guitare en main » manque', (await page.getByTestId('avatar-body').getAttribute('src')).includes('_base'));
   // Entraînement : session guidée 15 min complète
   await page.getByRole('button', { name: /Entraînement/ }).first().click();
   await page.getByRole('radio', { name: '15 min' }).click();

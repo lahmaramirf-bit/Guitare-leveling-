@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import type { AvatarId } from '../game/model';
-import { CANVAS, CHARACTERS, renderLayers, resolveAnimation, type AnimState } from './manifest';
+import { CANVAS, CHARACTERS, PLAY_SPRITES, playReady, renderLayers, resolveAnimation, type AnimState } from './manifest';
 
 export function usePrefersReducedMotion(): boolean {
   const q = '(prefers-reduced-motion: reduce)';
@@ -26,6 +26,17 @@ export function Avatar({ avatar, guitar = null, state = 'idle', className = '', 
   const anim = resolveAnimation(state, reduced);
   const layers = renderLayers(avatar, guitar);
   const c = CHARACTERS[avatar];
+  // Images « tient la guitare / gratte » : utilisées seulement une fois approuvées (sinon master inchangé).
+  const play = playReady(avatar) ? PLAY_SPRITES[avatar] : null;
+  const [frame, setFrame] = useState(0);
+  useEffect(() => {
+    if (!play || state !== 'strum') { setFrame(0); return; }
+    if (reduced) { setFrame(Math.floor(play.strum.length / 2)); return; }
+    let i = 0;
+    const t = window.setInterval(() => { i = (i + 1) % play.strum.length; setFrame(i); }, 1000 / play.fps);
+    return () => window.clearInterval(t);
+  }, [play, state, reduced]);
+  const bodySrc = play ? (state === 'strum' ? play.strum[frame] : play.hold!) : null;
   const alt = label ?? (avatar === 'boy' ? 'Ton héros : le musicien aux cheveux bruns' : 'Ton héroïne : la musicienne aux cheveux corail');
   return (
     <div className={`avatar ${className}`} data-avatar={avatar} data-anim={anim.state} data-anim-mode={anim.mode} data-blocked={anim.blocked ?? undefined}
@@ -33,7 +44,8 @@ export function Avatar({ avatar, guitar = null, state = 'idle', className = '', 
       <span className="avatar-shadow" aria-hidden="true" />
       <div className="avatar-rig">
         {layers.map((l) => l.slot === 'body'
-          ? <img key={l.slot} className={`avatar-layer layer-${l.slot}`} src={c.file} srcSet={`${c.file512} 512w, ${c.file} 1024w`} sizes="(max-width: 760px) 60vw, 420px" alt={alt} draggable={false} data-testid="avatar-body" />
+          ? bodySrc ? <img key={l.slot} className="avatar-layer layer-body" src={bodySrc} alt={alt} draggable={false} data-testid="avatar-body" />
+          : <img key={l.slot} className={`avatar-layer layer-${l.slot}`} src={c.file} srcSet={`${c.file512} 512w, ${c.file} 1024w`} sizes="(max-width: 760px) 60vw, 420px" alt={alt} draggable={false} data-testid="avatar-body" />
           : <img key={l.slot} className={`avatar-layer layer-${l.slot}`} src={l.src} alt="" draggable={false} />)}
       </div>
     </div>

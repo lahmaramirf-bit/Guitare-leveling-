@@ -1,4 +1,7 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
+import { CHORDS, strum } from '../audio/strum';
+import { playReady } from '../avatar/manifest';
+import { usePrefersReducedMotion } from '../avatar/Avatar';
 import { useGame } from '../ui/store';
 import { Bar, Crystal, Panel, fmt } from '../ui/bits';
 import { Avatar, AvatarPending } from '../avatar/Avatar';
@@ -37,6 +40,21 @@ export function Hub({ go }: { go: (s: Screen) => void }) {
   const sk = streak(save, today);
   const song = currentSong(save);
   const steps = song ? save.rep[song.id]?.st?.length ?? 0 : 0;
+  const reduced = usePrefersReducedMotion();
+  const [playing, setPlaying] = useState(false);
+  const [chord, setChord] = useState<{ name: string; n: number } | null>(null);
+  const chordIdx = useRef(0);
+  const stopT = useRef<number | undefined>(undefined);
+  const play = () => {
+    if (!save.profile.avatarConfirmed) return;
+    const i = chordIdx.current++;
+    if (save.profile.sfx) strum(i);
+    setChord({ name: CHORDS[i % CHORDS.length].name, n: i });
+    setPlaying(true);
+    window.clearTimeout(stopT.current);
+    stopT.current = window.setTimeout(() => setPlaying(false), 900);
+  };
+  const avatarState = playing ? (playReady(save.profile.avatar) ? 'strum' : 'celebrate') : celebrating ? 'celebrate' : 'idle';
   const live = (() => { const x = peekSession(); return x && x.date === today && !x.finished ? x : null; })();
   const pracToday = practiceSeconds(save, today);
   const hasBg = panel.status !== 'planned_missing' && !!panel.file;
@@ -51,11 +69,19 @@ export function Hub({ go }: { go: (s: Screen) => void }) {
             ? <img className="char-bg" src={panel.file!} alt="" draggable={false} />
             : <div className="char-bg-provisional" style={{ backgroundImage: `url(${w.provisional})` }} aria-hidden="true" />}
           {!hasBg && <AmbienceCanvas kind={w.ambience} />}
-          <div className="hub-hero" style={{ height: `${AVATAR_BOX_H * 100}%`, bottom: `${boxBottom}%` }}>
+          <button type="button" className={`hub-hero ${playing ? 'playing' : ''}`} style={{ height: `${AVATAR_BOX_H * 100}%`, bottom: `${boxBottom}%` }}
+            onClick={play} data-testid="hero-play" aria-label="Touche ton personnage pour qu’il joue un accord" title="Touche-moi pour jouer un accord ♪">
             {save.profile.avatarConfirmed
-              ? <Avatar avatar={save.profile.avatar} guitar={equipped(save, 'guitar')} state={celebrating ? 'celebrate' : 'idle'} />
+              ? <Avatar avatar={save.profile.avatar} guitar={equipped(save, 'guitar')} state={avatarState} />
               : <AvatarPending />}
-          </div>
+            {chord && playing && (
+              <span className="strum-fx" key={chord.n} aria-hidden="true">
+                <b className="chord-name">{chord.name}</b>
+                {!reduced && ['♪', '♫', '♩'].map((n, k) => <i key={k} className={`note n${k}`}>{n}</i>)}
+              </span>
+            )}
+          </button>
+          <span className="sr-only" aria-live="polite">{chord && playing ? `Accord ${chord.name}` : ''}</span>
           <div className="char-level"><span className="lv-label">Niv.</span> <span className="lv-num" data-testid="level">{L}</span><div className="lv-title">{r.title}</div></div>
           <div className={`rank-gem small rank-${r.id}`} title={`Rang ${r.id} — ${r.name}`}><span>{r.id === 'N' ? 'S+' : r.id}</span></div>
           {variantIds.length > 1 && (

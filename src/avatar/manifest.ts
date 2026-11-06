@@ -59,6 +59,20 @@ export const ANIMATIONS: Record<AnimState, AnimDef> = {
   walk: { status: 'planned_missing', needs: ['vues 3/4, côté, dos', 'cycle de marche validé'] },
 };
 
+/**
+ * Personnage qui TIENT sa guitare et la GRATTE quand on le touche (demande du fondateur, v0.8).
+ * Approche « images clés » (plus simple qu'un rig) : même canevas 1024×1280, sol à (512, 1170),
+ * personnage identique aux masters, seuls bras/mains et guitare ajoutés.
+ * Tant que status ≠ 'approved', on affiche le master et un retour visuel d'interface (notes), jamais un faux geste.
+ */
+export interface PlaySprites { status: AssetStatus; hold: string | null; strum: string[]; fps: number; expected: string[] }
+const playExpected = (a: AvatarId) => [`${a}_guitar_hold.png`, ...Array.from({ length: 6 }, (_, i) => `${a}_guitar_strum_0${i + 1}.png`)];
+export const PLAY_SPRITES: Record<AvatarId, PlaySprites> = {
+  boy: { status: 'planned_missing', hold: null, strum: [], fps: 12, expected: playExpected('boy') },
+  girl: { status: 'planned_missing', hold: null, strum: [], fps: 12, expected: playExpected('girl') },
+};
+export const playReady = (a: AvatarId) => PLAY_SPRITES[a].status === 'approved' && !!PLAY_SPRITES[a].hold && PLAY_SPRITES[a].strum.length > 0;
+
 export interface ResolvedAnim {
   state: AnimState;
   /** 'rig' = vraie animation ; 'placeholder' = léger effet d'interface sur le PNG entier ; 'static' = image fixe */
