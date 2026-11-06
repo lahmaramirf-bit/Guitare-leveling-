@@ -17,6 +17,8 @@ interface Ctx {
   act: (fn: (s: Save) => Save, msg?: string) => boolean;
   toast: (text: string, tone?: Toast['tone']) => void;
   toasts: Toast[]; saveOk: boolean; migrated: boolean;
+  /** vrai pendant ~1,2 s après un gain d'XP (état « célébration » de l'avatar) */
+  celebrating: boolean;
 }
 
 const GameCtx = createContext<Ctx | null>(null);
@@ -28,6 +30,8 @@ export function GameProvider({ children }: { children: ReactNode }) {
   const [toasts, setToasts] = useState<Toast[]>([]);
   const [saveOk, setSaveOk] = useState(true);
   const [today, setToday] = useState(dayKey());
+  const [celebrating, setCelebrating] = useState(false);
+  const celebTimer = useRef<number | undefined>(undefined);
   const nextId = useRef(1);
   const ref = useRef(s);
   ref.current = s;
@@ -52,6 +56,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
     const pb = progress(before, today), pa = progress(after, today);
     const diff = pa.c.xp - pb.c.xp;
     if (msg && diff > 0) toast(`${msg} +${diff.toLocaleString('fr-FR')} XP`, 'ok');
+    if (diff > 0) { setCelebrating(true); window.clearTimeout(celebTimer.current); celebTimer.current = window.setTimeout(() => setCelebrating(false), 1200); }
     const lb = levelOf(pb.c.xp), la = levelOf(pa.c.xp);
     const rb = effRank(before, pb.c.xp), ra = effRank(after, pa.c.xp);
     if (ra.id !== rb.id && pa.rankIdx > pb.rankIdx) toast(`Promotion ! Rang ${ra.id} · ${ra.title} — donjon « ${ra.name} » ouvert`, 'gold');
@@ -64,7 +69,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
   }, [today, toast]);
 
   const p = useMemo(() => progress(s, today), [s, today]);
-  const value = useMemo(() => ({ save: s, today, p, crystals: crystals(s, p), act, toast, toasts, saveOk, migrated }), [s, today, p, act, toast, toasts, saveOk, migrated]);
+  const value = useMemo(() => ({ save: s, today, p, crystals: crystals(s, p), act, toast, toasts, saveOk, migrated, celebrating }), [s, today, p, act, toast, toasts, saveOk, migrated, celebrating]);
   return <GameCtx.Provider value={value}>{children}</GameCtx.Provider>;
 }
 

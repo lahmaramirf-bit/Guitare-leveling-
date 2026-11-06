@@ -1,0 +1,50 @@
+{
+  "files": {
+    "boy_base.png": {
+      "size": [
+        1024,
+        1280
+      ],
+      "bboxAlpha20": [
+        304,
+        90,
+        719,
+        1170
+      ],
+      "cornersAlpha": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "footY": 1170,
+      "bytes": 540248,
+      "sha256": "bd9442e2d24b5d79c04a71d2ee3267a239137653ae86b8654c0c83672dcf9e7f"
+    },
+    "girl_base.png": {
+      "size": [
+        1024,
+        1280
+      ],
+      "bboxAlpha20": [
+        250,
+        90,
+        774,
+        1170
+      ],
+      "cornersAlpha": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "footY": 1170,
+      "bytes": 634069,
+      "sha256": "27b1ea1de2819f59e5091b79975cdeb9c2e39e9690a9fc42dcc11e26c5b8c4ba"
+    }
+  },
+  "warnings": [
+    "Base art is raster-flattened: not a 2D skeletal rig",
+    "Background art and actual guitars are not yet provided"
+  ]
+}

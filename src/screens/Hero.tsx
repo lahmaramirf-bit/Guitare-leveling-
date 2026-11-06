@@ -1,7 +1,8 @@
 import { useRef, useState } from 'react';
 import { useGame, kv } from '../ui/store';
 import { Bar, Crystal, Panel, RarityTag, Tabs, fmt } from '../ui/bits';
-import { CharacterPortrait } from '../appearance/CharacterPortrait';
+import { Avatar, AvatarPending } from '../avatar/Avatar';
+import { equipVisibility } from '../avatar/manifest';
 import { CATALOG, CONSUMABLES, ITEM, MASTERY, REQ_LABEL, SHOP, SLOT_LABELS, fitsAvatar, type CatalogItem } from '../game/catalog';
 import * as A from '../game/actions';
 import { crystalParts } from '../game/progress';
@@ -31,24 +32,22 @@ function Profile() {
   const { save, act, toast } = useGame();
   const [name, setName] = useState(save.profile.name);
   const avatar = save.profile.avatar;
+  const guitar = A.equipped(save, 'guitar');
+  const vis = equipVisibility(guitar);
   return (
     <Panel title="Héros">
       <div className="hero-edit">
-        <CharacterPortrait avatarId={avatar} size="md" />
+        <div className="hero-edit-avatar">{save.profile.avatarConfirmed ? <Avatar avatar={avatar} guitar={guitar} /> : <AvatarPending />}</div>
         <div className="stack-sm">
           <form className="row" onSubmit={(e) => { e.preventDefault(); act((s) => A.setName(s, name)); toast('Nom enregistré', 'ok'); }}>
-            <label className="grow">Nom<input maxLength={24} value={name} onChange={(e) => setName(e.target.value)} /></label>
+            <label className="grow">Nom<input id="hero-name" maxLength={24} value={name} onChange={(e) => setName(e.target.value)} /></label>
             <button className="btn" type="submit">OK</button>
           </form>
-          <div role="radiogroup" aria-label="Avatar" className="avatar-pick">
-            {(['boy', 'girl'] as const).map((a) => (
-              <button key={a} role="radio" aria-checked={avatar === a} className={`avatar-opt ${avatar === a ? 'sel' : ''}`} onClick={() => act((s) => A.setAvatar(s, a))}>
-                <img src={`./concept/${a}-portrait.png`} alt="" />
-                <span>{a === 'boy' ? 'Le Guitariste' : 'La Guitariste'}</span>
-              </button>
-            ))}
-          </div>
-          <p className="notice small">Portraits = <b>illustrations concept</b>. Les titres s’affichent déjà ; les tenues et guitares seront visibles sur le personnage quand les sprites en calques seront livrés. Ton équipement est enregistré dès maintenant.</p>
+          <p className="small muted">Ton personnage a été choisi au début de l’aventure et reste le même partout.</p>
+          <ul className="list-plain small">
+            <li><b>Guitare équipée :</b> {guitar ? ITEM[guitar]?.name : 'aucune'} — {vis === 'visible' ? 'visible sur le personnage' : vis === 'none' ? '—' : 'sera visible quand son illustration sera livrée'}.</li>
+            <li><b>Tenues et accessoires :</b> enregistrés ; visibles quand les calques du personnage seront livrés.</li>
+          </ul>
         </div>
       </div>
     </Panel>

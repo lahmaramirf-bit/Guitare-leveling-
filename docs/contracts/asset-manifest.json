@@ -1,23 +1,129 @@
 {
   "schemaVersion": 1,
-  "status": "SPEC_ONLY_NO_PRODUCTION_SPRITES",
+  "status": "V0.3_STATIC_MASTERS_ONLY",
   "updated": "2026-11-06",
   "statusLegend": {
-    "missing": "aucun fichier : ne rien rendre",
-    "reference_only": "planche concept : affichable uniquement étiquetée CONCEPT, jamais comme équipement",
+    "ready_static": "PNG aplati affichable en entier ; ni calques ni rig",
+    "reference_only": "planche concept : jamais rendue comme sprite",
+    "planned_missing": "asset non créé : ne rien rendre, ne rien prétendre",
     "approved": "couche de production validée par le fondateur (fichier requis)"
   },
-  "canvas": { "width": 1024, "height": 1280, "origin": "top-left", "anchor": { "centerX": 512, "groundY": 1170 } },
-  "layerOrder": ["accessory_back", "guitar_back", "hair_back", "body", "bottom", "shoes", "top", "face", "hair_front", "accessory_front", "guitar_front"],
+  "canvas": {
+    "width": 1024,
+    "height": 1280,
+    "origin": "top-left",
+    "anchor": {
+      "centerX": 512,
+      "groundY": 1170
+    }
+  },
+  "layerOrder": [
+    "guitar_strap_back",
+    "guitar_back",
+    "body",
+    "guitar_body_front",
+    "left_hand_over_neck",
+    "right_hand_over_strings"
+  ],
   "references": [
-    { "id": "master_characters", "path": "handoff/assets/reference/master-characters-APPROVED.png", "status": "reference_only", "width": 1536, "height": 1024, "label": "CONCEPT — personnages approuvés (planche aplatie)" },
-    { "id": "art_and_themes", "path": "handoff/assets/reference/art-and-three-themes-APPROVED.png", "status": "reference_only", "width": 1536, "height": 1024, "label": "CONCEPT — DA et 3 thèmes (planche aplatie)" }
+    {
+      "id": "master_characters",
+      "path": "handoff/assets/reference/master-characters-APPROVED.png",
+      "status": "reference_only",
+      "width": 1536,
+      "height": 1024,
+      "label": "CONCEPT — personnages approuvés (planche aplatie)"
+    },
+    {
+      "id": "art_and_themes",
+      "path": "handoff/assets/reference/art-and-three-themes-APPROVED.png",
+      "status": "reference_only",
+      "width": 1536,
+      "height": 1024,
+      "label": "CONCEPT — DA et 3 thèmes (planche aplatie)"
+    }
   ],
   "avatars": [
-    { "id": "boy", "identity": "garçon brun ébouriffé, écouteurs, veste académie bleu nuit/crème, étui de guitare", "productionStatus": "missing", "baseImage": null, "slots": { "hair": [], "top": [], "bottom": [], "accessory": [], "guitar": [] } },
-    { "id": "girl", "identity": "fille corail, queue de cheval, barrette clé de sol, veste académie bleu nuit/crème touches corail", "productionStatus": "missing", "baseImage": null, "slots": { "hair": [], "top": [], "bottom": [], "accessory": [], "guitar": [] } }
+    {
+      "id": "boy",
+      "productionStatus": "ready_static",
+      "baseImage": "public/characters/boy_base.png",
+      "sha256": "bd9442e2d24b5d79c04a71d2ee3267a239137653ae86b8654c0c83672dcf9e7f",
+      "bbox": [
+        304,
+        90,
+        719,
+        1170
+      ],
+      "layered": false,
+      "animated": false,
+      "rigSource": null
+    },
+    {
+      "id": "girl",
+      "productionStatus": "ready_static",
+      "baseImage": "public/characters/girl_base.png",
+      "sha256": "27b1ea1de2819f59e5091b79975cdeb9c2e39e9690a9fc42dcc11e26c5b8c4ba",
+      "bbox": [
+        250,
+        90,
+        774,
+        1170
+      ],
+      "layered": false,
+      "animated": false,
+      "rigSource": null
+    }
   ],
-  "mvpMiniPackTarget": { "perAvatar": { "base": 1, "hair": 2, "top": 2, "bottom": 1, "accessory": 1, "guitar": 2 } },
-  "itemShape": { "id": "string", "slot": "hair|top|bottom|accessory|guitar", "rarity": "common|rare|epic|legendary", "layers": { "<layerId>": "path/to/1024x1280.png" }, "status": "missing|reference_only|approved", "source": "path PSD/KRA", "license": "string", "unlock": "id de déblocage géré par la logique de progression existante" },
-  "themes": ["sakura", "cyberpunk", "ombre"]
+  "themes": [
+    "sakura",
+    "cyberpunk",
+    "ombre"
+  ],
+  "source": "handoff_art/manifest/asset_status.json (v0.3.0)",
+  "anchors": [
+    "shoulder_strap",
+    "left_hand_neck",
+    "right_hand_strum",
+    "body_center",
+    "guitar_neck_angle"
+  ],
+  "guitars": {
+    "guitar_study": "planned_missing",
+    "guitar_red_electric": "planned_missing",
+    "guitar_amethyst": "planned_missing",
+    "guitar_crystal": "planned_missing"
+  },
+  "animations": {
+    "idle": "planned_missing",
+    "greet": "planned_missing",
+    "celebrate": "planned_missing",
+    "strum": "planned_missing",
+    "walk": "planned_missing"
+  },
+  "clothingLayers": "planned_missing",
+  "themeBackgrounds": {
+    "sakura": {
+      "desktop": "bg_sakura_desktop.png",
+      "mobile": "bg_sakura_mobile.png",
+      "foreground": "fg_sakura.png",
+      "status": "planned_missing",
+      "provisional": "public/concept/theme-sakura.jpg (vignette de la planche approuvée, étiquetée « décor provisoire »)"
+    },
+    "cyberpunk": {
+      "desktop": "bg_cyberpunk_desktop.png",
+      "mobile": "bg_cyberpunk_mobile.png",
+      "foreground": "fg_cyberpunk.png",
+      "status": "planned_missing",
+      "provisional": "public/concept/theme-cyberpunk.jpg (vignette de la planche approuvée, étiquetée « décor provisoire »)"
+    },
+    "ombre": {
+      "desktop": "bg_ombre_desktop.png",
+      "mobile": "bg_ombre_mobile.png",
+      "foreground": "fg_ombre.png",
+      "status": "planned_missing",
+      "provisional": "public/concept/theme-ombre.jpg (vignette de la planche approuvée, étiquetée « décor provisoire »)"
+    }
+  },
+  "note": "Seuls les deux masters statiques existent. Aucun rig, guitare, vêtement ni décor final n'est livré."
 }

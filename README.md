@@ -2,7 +2,7 @@
 
 RPG d'apprentissage réel de la guitare : chaque minute jouée fait progresser ton héros (XP, rangs E → S, quêtes, coffre du jour, invocation cosmétique, répertoire, journal, grimoire). Trois univers : Sakura, Cyberpunk, Ombre.
 
-**Statut v0.2** : les mécaniques du projet de base (`handoff/base-project/`) sont portées — 7 quêtes adaptées au rang, Limit Break, portails, défis hebdo, 7 donjons, répertoire de 193 morceaux avec plan et collections, armée des ombres, records, 56 succès, grimoire, session guidée — avec un calcul d'XP **identique à l'original** (test de parité). Le gacha est remplacé par une **boutique liée à la progression**. Salles d'entraînement audio et partitions jouables : lots suivants (`docs/BASE_FEATURE_INVENTORY.md`). Personnages = **illustrations concept** en attendant les sprites (`art/BRIEFS_CHATGPT.md`). Non déployée publiquement.
+**Statut v0.3** : vrais personnages du kit art v0.3 (choix unique), hub central avec 3 univers (décors provisoires étiquetés), slots d’animation et d’équipement prêts (`docs/ART_INTEGRATION_V0.3.md`). **Base v0.2** : les mécaniques du projet de base (`handoff/base-project/`) sont portées — 7 quêtes adaptées au rang, Limit Break, portails, défis hebdo, 7 donjons, répertoire de 193 morceaux avec plan et collections, armée des ombres, records, 56 succès, grimoire, session guidée — avec un calcul d'XP **identique à l'original** (test de parité). Le gacha est remplacé par une **boutique liée à la progression**. Salles d'entraînement audio et partitions jouables : lots suivants (`docs/BASE_FEATURE_INVENTORY.md`). Personnages = **illustrations concept** en attendant les sprites (`art/BRIEFS_CHATGPT.md`). Non déployée publiquement.
 
 ## Lancer
 

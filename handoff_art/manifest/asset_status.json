@@ -1,0 +1,90 @@
+{
+  "version": "0.3.0",
+  "created": "2026-11-06",
+  "context": "Claude Code handoff for existing Guitar Leveling v0.2; code not included",
+  "canvas": {
+    "width": 1024,
+    "height": 1280,
+    "centerX": 512,
+    "groundY": 1170,
+    "origin": "top-left"
+  },
+  "characters": {
+    "boy": {
+      "status": "ready_static",
+      "file": "assets/characters/masters/boy_base.png",
+      "width": 1024,
+      "height": 1280,
+      "groundY": 1170,
+      "alphaBBoxMeaningful": [
+        304,
+        90,
+        719,
+        1170
+      ],
+      "sourceSize": [
+        1122,
+        1402
+      ],
+      "normalization": "downscale and recenter only, no generative redraw",
+      "sourceFile": "jeune_musicien_chibi_au_casque_doré.png",
+      "sourceHD": "assets/characters/originals/boy_source_1122x1402.png",
+      "animated": false,
+      "layered": false,
+      "artReview": "approved in conversation as style/model; rendering in app still requires acceptance check"
+    },
+    "girl": {
+      "status": "ready_static",
+      "file": "assets/characters/masters/girl_base.png",
+      "width": 1024,
+      "height": 1280,
+      "groundY": 1170,
+      "alphaBBoxMeaningful": [
+        250,
+        90,
+        774,
+        1170
+      ],
+      "sourceSize": [
+        1122,
+        1402
+      ],
+      "normalization": "downscale and recenter only, no generative redraw",
+      "sourceFile": "héroïne_musicienne_en_uniforme_académique.png",
+      "sourceHD": "assets/characters/originals/girl_source_1122x1402.png",
+      "animated": false,
+      "layered": false,
+      "artReview": "approved in conversation as style/model; rendering in app still requires acceptance check"
+    }
+  },
+  "status_legend": {
+    "ready_static": "renderable as full static base only; no outfit layers/rig",
+    "reference_only": "concept reference; must not render composite as game sprite",
+    "planned_missing": "asset not created; no fake completed claims"
+  },
+  "reference_art": [
+    "assets/references/master-characters-APPROVED.png",
+    "assets/references/art-and-three-themes-APPROVED.png"
+  ],
+  "other": {
+    "rig": "planned_missing",
+    "guitar_study": "planned_missing",
+    "guitar_red_electric": "planned_missing",
+    "guitar_amethyst": "planned_missing",
+    "guitar_crystal": "planned_missing",
+    "bg_sakura_desktop": "planned_missing",
+    "bg_cyberpunk_desktop": "planned_missing",
+    "bg_ombre_desktop": "planned_missing",
+    "all_mobile_backgrounds": "planned_missing",
+    "clothing_layers": "planned_missing"
+  },
+  "safety": {
+    "do_not_infer_bone_positions_from_flattened_images": true,
+    "store_items_not_random": true,
+    "no_real_money_gacha": true
+  },
+  "content_origin": {
+    "approved_board": "From user-provided Claude Code handoff ZIP",
+    "avatar_art": "From two previously generated, user-approved full-body transparent portraits"
+  }
+}

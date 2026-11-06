@@ -1,8 +1,7 @@
 import { useState } from 'react';
 import { useGame } from '../ui/store';
 import { Bar, Crystal, Panel, fmt } from '../ui/bits';
-import { CharacterPortrait } from '../appearance/CharacterPortrait';
-import { themeConceptImage } from '../appearance/themes';
+import { AvatarPortrait } from '../avatar/Avatar';
 import { effRank, levelOf, stars, streak, xpFor } from '../game/engine';
 import { RANKS, RANK_INDEX, STATS } from '../content';
 import { equipped } from '../game/actions';
@@ -19,15 +18,16 @@ export function HeroCard({ onCustomize }: { onCustomize: () => void }) {
   const sk = streak(save, today);
   const title = equipped(save, 'title');
   return (
-    <Panel className="hero-card">
-      <div className="hero-scene" style={{ backgroundImage: `url(${themeConceptImage(save.profile.theme)})` }}>
+    <Panel className="hero-card compact">
+      <div className="hero-strip">
+        {save.profile.avatarConfirmed ? <AvatarPortrait avatar={save.profile.avatar} size={64} /> : <span className="avatar-portrait pending" style={{ width: 64, height: 64 }} aria-hidden="true" />}
         <div className="hero-level">
           <span className="lv-label">Niv.</span> <span className="lv-num" data-testid="level">{L}</span>
           {stars(L) > 0 && <span className="lv-stars"> {'★'.repeat(Math.min(5, stars(L)))}</span>}
           <div className="lv-title">{r.title}</div>
         </div>
-        <CharacterPortrait avatarId={save.profile.avatar} size="lg" />
-        <div className={`rank-gem rank-${r.id}`} title={`Rang ${r.id} — ${r.name}`}><span>{r.id === 'N' ? 'S+' : r.id}</span></div>
+        <span className="spacer" />
+        <div className={`rank-gem small rank-${r.id}`} title={`Rang ${r.id} — ${r.name}`}><span>{r.id === 'N' ? 'S+' : r.id}</span></div>
       </div>
       <div className="hero-body">
         <div className="hero-name-row">

@@ -144,9 +144,18 @@ export const deleteCustomSong = (s: Save, id: string) =>
 
 // --- Profil ---
 export const setName = (s: Save, name: string) => commit(s, (d) => { const n = name.trim().slice(0, 24); if (n) d.profile.name = n; });
-export const setAvatar = (s: Save, a: AvatarId) => commit(s, (d) => { d.profile.avatar = a; });
+/** Choix d'apparence : possible une seule fois. Ensuite l'identité de l'avatar est verrouillée. */
+export function confirmAvatar(s: Save, a: AvatarId): Save {
+  if (s.profile.avatarConfirmed) throw new ActionError('Ton personnage est déjà choisi.');
+  if (a !== 'boy' && a !== 'girl') throw new ActionError('Personnage inconnu.');
+  return commit(s, (d) => { d.profile.avatar = a; d.profile.avatarConfirmed = true; d.shop.equipped = {}; });
+}
+export const needsAvatarChoice = (s: Save) => !s.profile.avatarConfirmed;
 export const setTheme = (s: Save, t: ThemeId) => commit(s, (d) => { d.profile.theme = t; });
-export const finishOnboarding = (s: Save, name: string, a: AvatarId) => commit(s, (d) => { d.profile.name = name.trim().slice(0, 24) || 'Héros'; d.profile.avatar = a; d.profile.onboarded = true; });
+export function finishOnboarding(s: Save, name: string, a: AvatarId): Save {
+  const withAvatar = s.profile.avatarConfirmed ? s : confirmAvatar(s, a);
+  return commit(withAvatar, (d) => { if (name.trim() || !d.profile.onboarded) d.profile.name = name.trim().slice(0, 24) || d.profile.name || 'Héros'; d.profile.onboarded = true; });
+}
 
 // --- Entraînement ---
 /** Bloc de session guidée terminé : valide la quête correspondante. */

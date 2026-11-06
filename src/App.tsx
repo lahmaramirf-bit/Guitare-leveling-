@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react';
 import { useGame } from './ui/store';
 import { Crystal, fmt } from './ui/bits';
 import { Quests } from './screens/Quests';
+import { Hub } from './screens/Hub';
+import { Avatar } from './avatar/Avatar';
 import { Hero } from './screens/Hero';
 import { Dungeons } from './screens/Dungeons';
 import { Repertoire } from './screens/Repertoire';
@@ -14,9 +16,10 @@ import { effRank, levelOf, stars, xpFor } from './game/engine';
 import { QUESTS, RANKS, RANK_INDEX } from './content';
 import type { AvatarId } from './game/model';
 
-export type Screen = 'quetes' | 'heros' | 'donjons' | 'repertoire' | 'entrainement' | 'journal' | 'grimoire';
+export type Screen = 'hub' | 'quetes' | 'heros' | 'donjons' | 'repertoire' | 'entrainement' | 'journal' | 'grimoire';
 
 const NAV: { id: Screen; label: string; short: string; icon: string }[] = [
+  { id: 'hub', label: 'Hub', short: 'Hub', icon: '⌂' },
   { id: 'quetes', label: 'Quêtes', short: 'Quêtes', icon: '📜' },
   { id: 'heros', label: 'Héros', short: 'Héros', icon: '✧' },
   { id: 'donjons', label: 'Donjons', short: 'Donjons', icon: '⛩' },
@@ -28,7 +31,7 @@ const NAV: { id: Screen; label: string; short: string; icon: string }[] = [
 
 function screenFromHash(): Screen {
   const h = window.location.hash.replace(/^#\/?/, '') as Screen;
-  return NAV.some((n) => n.id === h) ? h : 'quetes';
+  return NAV.some((n) => n.id === h) ? h : 'hub';
 }
 
 export function App() {
@@ -63,7 +66,7 @@ export function App() {
   return (
     <div className="app">
       <header className="top">
-        <button className="logo" onClick={() => go('quetes')} aria-label="Accueil Guitar Leveling"><span className="logo-note">♫</span> Guitar <em>Leveling</em></button>
+        <button className="logo" onClick={() => go('hub')} aria-label="Accueil Guitar Leveling"><span className="logo-note">♫</span> Guitar <em>Leveling</em></button>
         <div className="top-right">
           <span className="chip" title="Cristaux"><Crystal /> {fmt(crystals)}</span>
           <span className="chip" title="Niveau et rang">Niv. {L} · {r.id === 'N' ? 'S+' : r.id}</span>
@@ -71,7 +74,7 @@ export function App() {
         </div>
       </header>
 
-      <div className="quest-banner" role="note"><span className="bang">!</span><span>{sysline}</span></div>
+      {screen !== 'hub' && <div className="quest-banner" role="note"><span className="bang">!</span><span>{sysline}</span></div>}
       {!saveOk && <div className="quest-banner warn" role="alert">Sauvegarde indisponible dans ce navigateur (navigation privée ?). Exporte ta progression depuis Héros › Sauvegarde.</div>}
 
       <nav className="nav" aria-label="Navigation principale">
@@ -86,6 +89,7 @@ export function App() {
       </nav>
 
       <main className="main">
+        {screen === 'hub' && <Hub go={go} />}
         {screen === 'quetes' && <Quests goHero={() => go('heros')} />}
         {screen === 'heros' && <Hero />}
         {screen === 'donjons' && <Dungeons />}
@@ -95,7 +99,7 @@ export function App() {
         {screen === 'grimoire' && <Grimoire />}
       </main>
 
-      <footer className="foot muted small">Guitar Leveling · v0.2 · Illustrations : concepts de référence, sprites en production.</footer>
+      <footer className="foot muted small">Guitar Leveling · v0.3 · Personnages : masters validés (statiques). Décors finaux et animations en production.</footer>
 
       {themeOpen && (
         <div className="modal-back" onClick={() => setThemeOpen(false)}>
@@ -116,7 +120,7 @@ export function App() {
         </div>
       )}
 
-      {!save.profile.onboarded && <Onboarding />}
+      {(!save.profile.onboarded || A.needsAvatarChoice(save)) && <Onboarding />}
 
       <div className="toasts" aria-live="polite">
         {toasts.map((t) => <div key={t.id} className={`toast toast-${t.tone}`}>{t.text}</div>)}
@@ -127,24 +131,28 @@ export function App() {
 
 function Onboarding() {
   const { save, act } = useGame();
+  const returning = save.profile.onboarded;
   const [name, setName] = useState('');
-  const [avatar, setAv] = useState<AvatarId>(save.profile.avatar);
+  const [avatar, setAv] = useState<AvatarId | null>(null);
   return (
     <div className="modal-back">
-      <form className="modal onboarding" role="dialog" aria-modal="true" aria-label="Créer ton héros" onSubmit={(e) => { e.preventDefault(); act((s) => A.finishOnboarding(s, name, avatar)); }}>
-        <h2>Bienvenue à l’Académie</h2>
-        <p>Choisis ton héros. Chaque quête de guitare réellement jouée le fera progresser, du rang E jusqu’au rang S.</p>
-        <div role="radiogroup" aria-label="Avatar" className="avatar-pick big">
+      <form className="modal onboarding" role="dialog" aria-modal="true" aria-label="Choisis ton personnage"
+        onSubmit={(e) => { e.preventDefault(); if (avatar) act((s) => A.finishOnboarding(s, name, avatar)); }}>
+        <h2>{returning ? 'Choisis ton personnage' : 'Bienvenue à l’Académie'}</h2>
+        <p>{returning
+          ? 'Nouveauté : ton héros a désormais une vraie apparence. Choisis-la une fois ; ta progression est conservée.'
+          : 'Choisis l’apparence de ton héros. Chaque quête de guitare réellement jouée le fera progresser, du rang E jusqu’au rang S.'}</p>
+        <div role="radiogroup" aria-label="Apparence du personnage" className="avatar-pick big">
           {(['boy', 'girl'] as const).map((a) => (
-            <button type="button" key={a} role="radio" aria-checked={avatar === a} className={`avatar-opt ${avatar === a ? 'sel' : ''}`} onClick={() => setAv(a)}>
-              <img src={`./concept/${a}-portrait.png`} alt={a === 'boy' ? 'Garçon brun' : 'Fille aux cheveux corail'} />
-              <span>{a === 'boy' ? 'Le Guitariste' : 'La Guitariste'}</span>
+            <button type="button" key={a} role="radio" aria-checked={avatar === a} className={`avatar-opt ${avatar === a ? 'sel' : ''}`} onClick={() => setAv(a)} data-testid={`pick-${a}`}>
+              <Avatar avatar={a} state="idle" label={a === 'boy' ? 'Musicien aux cheveux bruns et au casque' : 'Musicienne aux cheveux corail et à la barrette clé de sol'} />
+              <span>{a === 'boy' ? 'Le musicien' : 'La musicienne'}</span>
             </button>
           ))}
         </div>
-        <label>Ton nom de héros<input autoFocus maxLength={24} value={name} onChange={(e) => setName(e.target.value)} placeholder="Héros" /></label>
-        <button className="btn btn-primary btn-big" type="submit">Commencer l’aventure ♪</button>
-        <p className="muted small">Ta progression est enregistrée dans ce navigateur. Une sauvegarde du projet de base présente dans ce navigateur est reprise automatiquement.</p>
+        {!returning && <label>Ton nom de héros<input id="onb-name" maxLength={24} value={name} onChange={(e) => setName(e.target.value)} placeholder="Héros" /></label>}
+        <button className="btn btn-primary btn-big" type="submit" disabled={!avatar}>{avatar ? 'Confirmer ce personnage ♪' : 'Choisis un personnage'}</button>
+        <p className="muted small">Ce choix est définitif : ton personnage restera le même sur toutes les pages. C’est un choix d’apparence, il ne dit rien de toi.</p>
       </form>
     </div>
   );

@@ -54,14 +54,18 @@ export interface Save {
   meta: { peak?: RankId };
   rep: Record<string, RepEntry>;
   repc: Record<string, CustomSong>;
-  profile: { name: string; avatar: AvatarId; theme: ThemeId; onboarded: boolean; sfx: boolean };
+  /**
+   * avatar : apparence de départ choisie UNE fois (avatarConfirmed). Ce n'est pas une donnée de genre du joueur.
+   * Les sauvegardes antérieures sans avatarConfirmed affichent le choix une seule fois, sans perte de données.
+   */
+  profile: { name: string; avatar: AvatarId; avatarConfirmed: boolean; theme: ThemeId; onboarded: boolean; sfx: boolean };
   shop: { spent: number; owned: string[]; equipped: Partial<Record<Slot, string | null>>; inv: { c_scroll: number; c_key: number } };
 }
 
 export function emptySave(): Save {
   return {
     v: 2, days: {}, items: {}, weeks: {}, records: {}, meta: {}, rep: {}, repc: {},
-    profile: { name: 'Héros', avatar: 'boy', theme: 'sakura', onboarded: false, sfx: true },
+    profile: { name: 'Héros', avatar: 'boy', avatarConfirmed: false, theme: 'sakura', onboarded: false, sfx: true },
     shop: { spent: 0, owned: [], equipped: {}, inv: { c_scroll: 0, c_key: 0 } },
   };
 }

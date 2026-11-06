@@ -13,9 +13,8 @@ import sys
 ROOT = Path(__file__).resolve().parent.parent
 C = ROOT / "docs" / "contracts"
 THEMES = {"sakura", "cyberpunk", "ombre"}
-LAYERS = ["accessory_back", "guitar_back", "hair_back", "body", "bottom", "shoes",
-          "top", "face", "hair_front", "accessory_front", "guitar_front"]
-STATUSES = {"missing", "reference_only", "approved"}
+LAYERS = ["guitar_strap_back", "guitar_back", "body", "guitar_body_front", "left_hand_over_neck", "right_hand_over_strings"]
+STATUSES = {"missing", "reference_only", "approved", "ready_static", "planned_missing"}
 HEX = re.compile(r"^#[0-9a-fA-F]{6}$")
 ID = re.compile(r"^[a-z0-9_]+$")
 errors = []
@@ -46,7 +45,7 @@ if m:
     if m.get("canvas", {}).get("width") != 1024 or m["canvas"].get("height") != 1280:
         err("manifest: canevas doit être 1024x1280")
     if m.get("layerOrder") != LAYERS:
-        err("manifest: layerOrder différent de la spec 04_ASSET_SPEC")
+        err("manifest: layerOrder différent du contrat v0.3 (handoff_art/docs/04)")
     if set(m.get("themes", [])) != THEMES or len(m["themes"]) != 3:
         err("manifest: exactement 3 thèmes requis (sakura, cyberpunk, ombre)")
     for ref in m.get("references", []):
@@ -64,8 +63,17 @@ if m:
         st = a.get("productionStatus")
         if st not in STATUSES:
             err(f"manifest: statut inconnu {st} pour {a['id']}")
-        if st == "approved" and not a.get("baseImage"):
-            err(f"manifest: {a['id']} approved sans baseImage")
+        if st in ("approved", "ready_static"):
+            p = ROOT / (a.get("baseImage") or "")
+            if not a.get("baseImage") or not p.is_file():
+                err(f"manifest: {a['id']} {st} sans baseImage existante")
+            elif png_size(p) != (1024, 1280):
+                err(f"manifest: {a['id']} baseImage n'est pas en 1024x1280")
+            elif a.get("sha256") and __import__("hashlib").sha256(p.read_bytes()).hexdigest() != a["sha256"]:
+                err(f"manifest: {a['id']} empreinte SHA-256 différente du kit")
+        for k, v in m.get("guitars", {}).items():
+            if v not in STATUSES:
+                err(f"manifest: statut guitare inconnu {k}")
         for slot, items in a.get("slots", {}).items():
             for it in items:
                 if it.get("status") == "approved":

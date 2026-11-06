@@ -62,6 +62,7 @@ export function sanitize(raw: unknown): Save {
   if (p.avatar === 'girl') s.profile.avatar = 'girl';
   if (p.theme === 'cyberpunk' || p.theme === 'ombre' || p.theme === 'sakura') s.profile.theme = p.theme;
   s.profile.onboarded = p.onboarded === true;
+  s.profile.avatarConfirmed = p.avatarConfirmed === true && (p.avatar === 'boy' || p.avatar === 'girl');
   if (p.sfx === false) s.profile.sfx = false;
   const sh = obj(r.shop);
   s.shop.spent = nat(sh.spent) ?? 0;
