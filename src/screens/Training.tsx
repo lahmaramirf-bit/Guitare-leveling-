@@ -8,6 +8,7 @@ import * as A from '../game/actions';
 import { Metronome } from '../audio/metronome';
 import { DURATIONS, SESSION_PLANS, blockMs, blocksOf, completedWithoutSkip, finishBlock, fmtClock, fmtMinutes, isRunning, newSession, pause, remainingMs, start, type BlockResult } from '../practice/session';
 import { useSession } from '../practice/useSession';
+import { placement } from '../game/placement';
 
 type Sub = 'session' | 'exos' | 'metro' | 'soon';
 const EXCAT: [string, string][] = [['all', 'Tout'], ['mg', 'Main gauche'], ['md', 'Main droite'], ['coord', 'Coordination'], ['expr', 'Son et effets']];
@@ -45,7 +46,7 @@ const qname = (id: QuestId) => QUESTS.find((q) => q.id === id)?.name ?? id;
 function Session() {
   const { save, today, p, crystals, act } = useGame();
   const { state: raw, set, now } = useSession();
-  const [dur, setDur] = useState(30);
+  const [dur, setDur] = useState<number>(() => (save.meta.place ? placement(save.meta.place).minutes : 30));
   // Une séance d'un autre jour n'est pas reprise (ses blocs ont déjà été crédités le jour même).
   const state = raw && raw.date === today ? raw : null;
   const desc = questDescs(save, effRank(save, p.c.xp), today);

@@ -44,6 +44,8 @@ export function sanitize(raw: unknown): Save {
   }
   const peak = obj(r.meta).peak;
   if (typeof peak === 'string' && RIDS.has(peak)) s.meta.peak = peak as Save['meta']['peak'];
+  const place = obj(r.meta).place;
+  if (Array.isArray(place) && place.length === 3 && place.every((n) => Number.isInteger(n) && n >= 0 && n <= 3)) s.meta.place = place as number[];
   for (const [k, v] of Object.entries(obj(r.rep))) {
     const e = obj(v); const out: Save['rep'][string] = {};
     if (typeof e.s === 'string' && ['', 'c', 'w', 'm'].includes(e.s)) out.s = e.s as Save['rep'][string]['s'];

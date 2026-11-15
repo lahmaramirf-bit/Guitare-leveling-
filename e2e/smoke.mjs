@@ -29,16 +29,22 @@ try {
   void xpOf;
 
   await page.goto(URL);
+  check('questionnaire de niveau au premier lancement', await page.getByRole('dialog', { name: 'Ton niveau' }).isVisible());
+  check('questionnaire : continuer impossible sans réponses', await page.getByTestId('quiz-next').isDisabled());
+  await page.getByTestId('quiz-exp-1').click(); await page.getByTestId('quiz-chords-1').click(); await page.getByTestId('quiz-read-2').click();
+  check('questionnaire : rang de départ annoncé (D)', (await page.getByTestId('quiz-result').textContent()).includes('Rang de départ D'));
+  await page.getByTestId('quiz-next').click();
   check('choix du personnage au premier lancement', await page.getByRole('dialog', { name: 'Choisis ton personnage' }).isVisible());
   check('confirmation impossible sans choix', await page.getByRole('button', { name: 'Choisis un personnage' }).isDisabled());
   const imgs = await page.getByRole('dialog').locator('[data-testid="avatar-body"]').evaluateAll((els) => els.map((e) => e.currentSrc || e.src));
   check('aperçus = vrais masters du kit (pas de recadrage)', imgs.length === 2 && imgs.every((u) => /characters\/(boy|girl)_base/.test(u)), imgs.join(' '));
   check('avant le choix : aucun avatar par défaut derrière la fenêtre', (await page.locator('.hub-hero [data-avatar]').count()) === 0 && (await page.locator('.hub-hero .avatar-pending').count()) === 1);
   await page.getByTestId('pick-girl').click();
-  await page.getByLabel('Ton nom de héros').fill('Amir');
+  await page.getByLabel('Son nom').fill('Amir');
   await page.getByRole('button', { name: /Confirmer ce personnage/ }).click();
   const sv0 = await saved();
   check('personnage choisi et verrouillé (fille, Amir)', sv0.profile.avatar === 'girl' && sv0.profile.avatarConfirmed === true && sv0.profile.name === 'Amir');
+  check('placement : rang D effectif, XP à zéro', sv0.meta.peak === 'D' && (await page.locator('.rank-gem.small span').first().textContent()) === 'D');
   await page.screenshot({ path: `${OUT}/00-hub.png` });
   const fit = async (pg) => pg.evaluate(() => {
     const st = document.querySelector('[data-testid="hub-stage"]').getBoundingClientRect();
@@ -70,6 +76,8 @@ try {
 
   // Donjon
   await page.getByRole('button', { name: /Donjons/ }).first().click();
+  check('donjons : ouvert sur le rang de départ (D)', await page.getByRole('tab', { name: /^D/ }).getAttribute('aria-selected') === 'true');
+  await page.getByRole('tab', { name: /^E/ }).click();
   await page.getByTestId('E-obj-0').click();
   await page.getByTestId('E-boss-0').click();
   check('objectif + boss du donjon E validés', !!(await saved()).items['E-obj-0'] && !!(await saved()).items['E-boss-0']);
@@ -186,8 +194,9 @@ try {
   const lp = await lc.newPage();
   lp.on('pageerror', (e) => errors.push(e.message));
   await lp.goto(URL);
+  check('sauvegarde du projet de base : pas de questionnaire, rang issu de la progression', await lp.getByRole('dialog', { name: 'Choisis ton personnage' }).isVisible());
   await lp.getByTestId('pick-boy').click();
-  await lp.getByLabel('Ton nom de héros').fill('Ancien');
+  await lp.getByLabel('Son nom').fill('Ancien');
   await lp.getByRole('button', { name: /Confirmer ce personnage/ }).click();
   const lv = await lp.getByTestId('level').textContent();
   // 20+30+30+20+20 quêtes + 40 entraînement + 120 + 80 donjon + 2×40 records = 440 XP → niveau 2

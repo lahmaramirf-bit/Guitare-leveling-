@@ -15,6 +15,7 @@ import * as A from './game/actions';
 import { effRank, levelOf, stars, xpFor } from './game/engine';
 import { QUESTS, RANKS, RANK_INDEX } from './content';
 import type { AvatarId } from './game/model';
+import { PLACEMENT, placement } from './game/placement';
 
 export type Screen = 'hub' | 'quetes' | 'heros' | 'donjons' | 'repertoire' | 'entrainement' | 'journal' | 'grimoire';
 
@@ -160,25 +161,52 @@ function Onboarding() {
   const returning = save.profile.onboarded;
   const [name, setName] = useState('');
   const [avatar, setAv] = useState<AvatarId | null>(null);
+  // Un joueur qui a déjà un historique (sauvegarde du projet de base) n'est pas requestionné : son rang vient de sa progression.
+  const hasHistory = Object.keys(save.days).length > 0;
+  const [step, setStep] = useState<'quiz' | 'avatar'>(returning || hasHistory ? 'avatar' : 'quiz');
+  const [pts, setPts] = useState<(number | null)[]>([null, null, null]);
+  const done = pts.every((x) => x !== null);
+  const place = done ? placement(pts as number[]) : null;
+
+  if (step === 'quiz') {
+    return (
+      <div className="modal-back">
+        <div className="modal onboarding" role="dialog" aria-modal="true" aria-label="Ton niveau">
+          <h2>Bienvenue à l’Académie</h2>
+          <p>Trois questions pour adapter tes quêtes à ce que tu sais déjà. Tu pourras monter plus haut en jouant.</p>
+          {PLACEMENT.map((Q, qi) => (
+            <fieldset className="quiz-q" key={Q.id}>
+              <legend>{qi + 1}. {Q.q}</legend>
+              <div className="quiz-a">
+                {Q.a.map((a) => <button type="button" key={a.label} className={`btn ${pts[qi] === a.pts ? 'btn-gold' : ''}`} aria-pressed={pts[qi] === a.pts} data-testid={`quiz-${Q.id}-${a.pts}`} onClick={() => setPts((p) => p.map((v, i) => (i === qi ? a.pts : v)))}>{a.label}</button>)}
+              </div>
+            </fieldset>
+          ))}
+          {place && <p className="notice" data-testid="quiz-result"><b>Rang de départ {place.rank}</b> · {place.label} Séances conseillées : {place.minutes} min.</p>}
+          <button className="btn btn-primary btn-big" type="button" disabled={!done} data-testid="quiz-next" onClick={() => setStep('avatar')}>{done ? 'Continuer ♪' : 'Réponds aux 3 questions'}</button>
+        </div>
+      </div>
+    );
+  }
   return (
     <div className="modal-back">
       <form className="modal onboarding" role="dialog" aria-modal="true" aria-label="Choisis ton personnage"
-        onSubmit={(e) => { e.preventDefault(); if (avatar) act((s) => A.finishOnboarding(s, name, avatar)); }}>
-        <h2>{returning ? 'Choisis ton personnage' : 'Bienvenue à l’Académie'}</h2>
+        onSubmit={(e) => { e.preventDefault(); if (avatar) act((s) => { const n = A.finishOnboarding(s, name, avatar); return done && !returning ? A.placeLevel(n, pts as number[]) : n; }); }}>
+        <h2>{returning ? 'Choisis ton personnage' : 'Ton personnage'}</h2>
         <p>{returning
           ? 'Nouveauté : ton héros a désormais une vraie apparence. Choisis-la une fois ; ta progression est conservée.'
-          : 'Choisis l’apparence de ton héros. Chaque quête de guitare réellement jouée le fera progresser, du rang E jusqu’au rang S.'}</p>
+          : 'Chaque quête de guitare réellement jouée le fera progresser, du rang E jusqu’au rang S.'}</p>
         <div role="radiogroup" aria-label="Apparence du personnage" className="avatar-pick big">
           {(['boy', 'girl'] as const).map((a) => (
-            <button type="button" key={a} role="radio" aria-checked={avatar === a} className={`avatar-opt ${avatar === a ? 'sel' : ''}`} onClick={() => setAv(a)} data-testid={`pick-${a}`}>
+            <button type="button" key={a} role="radio" aria-checked={avatar === a} className={`avatar-opt ${avatar === a ? 'sel' : ''}`} onClick={() => { setAv(a); }} data-testid={`pick-${a}`}>
               <Avatar avatar={a} state="idle" label={a === 'boy' ? 'Musicien aux cheveux bruns et au casque' : 'Musicienne aux cheveux corail et à la barrette clé de sol'} />
-              <span>{a === 'boy' ? 'Le musicien' : 'La musicienne'}</span>
+              <span>{A.DEFAULT_NAMES[a]}</span>
             </button>
           ))}
         </div>
-        {!returning && <label>Ton nom de héros<input id="onb-name" maxLength={24} value={name} onChange={(e) => setName(e.target.value)} placeholder={avatar ? A.DEFAULT_NAMES[avatar] : 'Rémi ou Mélodie'} /></label>}
+        {!returning && <label>Son nom<input id="onb-name" maxLength={24} value={name} onChange={(e) => setName(e.target.value)} placeholder={avatar ? A.DEFAULT_NAMES[avatar] : 'Rémi ou Mélodie'} /></label>}
         <button className="btn btn-primary btn-big" type="submit" disabled={!avatar}>{avatar ? 'Confirmer ce personnage ♪' : 'Choisis un personnage'}</button>
-        <p className="muted small">Ce choix est définitif : ton personnage restera le même sur toutes les pages. C’est un choix d’apparence, il ne dit rien de toi.</p>
+        <p className="muted small">Ce choix est définitif : ton personnage restera le même partout. C’est un choix d’apparence, il ne dit rien de toi.</p>
       </form>
     </div>
   );

@@ -1,5 +1,6 @@
 /** Actions du joueur : fonctions pures (copie → modification → nouvelle sauvegarde). */
 import { PLAN, QUESTS, RANK_INDEX, type QuestId, type RankId } from '../content';
+import { placement } from './placement';
 import type { AvatarId, Day, Save, Slot, SongState, ThemeId } from './model';
 import { compute, rankOf, songById } from './engine';
 import { CONSUMABLES, ITEM, defaultLoadout, fitsAvatar } from './catalog';
@@ -155,6 +156,12 @@ export const needsAvatarChoice = (s: Save) => !s.profile.avatarConfirmed;
 export const setTheme = (s: Save, t: ThemeId) => commit(s, (d) => { d.profile.theme = t; });
 /** Noms par défaut (brief du 2026-11-15) : un nom musical par personnage, modifiable à tout moment. */
 export const DEFAULT_NAMES: Record<AvatarId, string> = { boy: 'Rémi', girl: 'Mélodie' };
+/** Questionnaire de niveau : fixe le rang de départ (jamais vers le bas si un rang plus haut est déjà atteint). */
+export const placeLevel = (s: Save, points: number[]) => commit(s, (d) => {
+  const r = placement(points).rank;
+  d.meta.place = points;
+  if (!d.meta.peak || RANK_INDEX(r) > RANK_INDEX(d.meta.peak)) d.meta.peak = r;
+});
 export function finishOnboarding(s: Save, name: string, a: AvatarId): Save {
   const withAvatar = s.profile.avatarConfirmed ? s : confirmAvatar(s, a);
   return commit(withAvatar, (d) => { if (name.trim() || !d.profile.onboarded) d.profile.name = name.trim().slice(0, 24) || (d.profile.name && d.profile.name !== 'Héros' ? d.profile.name : DEFAULT_NAMES[d.profile.avatar]); d.profile.onboarded = true; });

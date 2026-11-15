@@ -53,7 +53,8 @@ export interface Save {
   items: Record<string, string | true>;
   weeks: Record<string, string[]>;
   records: Record<string, { best: number; date: string; beats: number }>;
-  meta: { peak?: RankId };
+  /** peak : plus haut rang atteint (ou rang de départ choisi par le questionnaire) ; place : réponses du questionnaire */
+  meta: { peak?: RankId; place?: number[] };
   rep: Record<string, RepEntry>;
   repc: Record<string, CustomSong>;
   /**

@@ -82,3 +82,11 @@ Captures : `art/previews/compare/`.
 | Captures | `docs/qa/v08/` : choix, séance en cours, accueil « Reprendre », bilan ; mobile 390 px et ordinateur 1280 px |
 | Non testé | Safari/iOS, Firefox, appareil réel ; Web Audio avec le bouton silencieux iOS |
 | Toucher le personnage (v0.8) | unitaires 44/44 (doigtés justes, master conservé sans art) ; E2E **49/49** (accord affiché, master inchangé) ; amplitude des cordes générées mesurée dans Chromium = 1,00 (son produit) ; **non écouté sur appareil réel** |
+
+## Lot v0.8.2–0.8.3 — brief du 15 novembre (2026-11-15)
+| Commande | Résultat |
+|---|---|
+| `npm test` | **48/48** (nouveaux : noms par défaut, interrupteur des sons, placement E→B, pas de rétrogradation, XP à 0, nettoyage) |
+| `npm run e2e` | **58/58** (nouveaux : questionnaire bloquant sans réponses, rang de départ D annoncé puis effectif, donjons ouverts sur D, pas de questionnaire pour une sauvegarde du projet de base, réglages par Échap, interrupteur des sons, bandeau de conseils) |
+| `typecheck` / contrats | 0 erreur |
+| Captures | `docs/qa/v08/v082_*` (accueil, profil, réglages) et `v083_*` (questionnaire, personnage, donjon de départ D), mobile 390 px |

@@ -595,3 +595,8 @@ button.hub-hero:focus-visible { outline: 3px solid #fff; outline-offset: -6px; b
 .profile-head { display: flex; align-items: center; gap: 14px; margin-bottom: 14px; }
 .profile-head .hero-name { margin: 0; font-size: 1.4rem; }
 .profile-head .streak { margin-left: auto; }
+.quiz-q { border: 0; padding: 0; margin: 0 0 10px; }
+.quiz-q legend { font-weight: 700; margin-bottom: 6px; }
+.quiz-a { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.quiz-a .btn { white-space: normal; text-align: left; line-height: 1.25; padding: 8px 10px; }
+@media (max-width: 760px) { .quiz-a .btn { font-size: .8rem; padding: 7px 8px; min-height: 40px; } .quiz-q legend { font-size: .95rem; } .onboarding h2 { margin-top: 0; } }
