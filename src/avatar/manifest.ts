@@ -4,7 +4,7 @@
  */
 import type { AvatarId } from '../game/model';
 
-export type AssetStatus = 'ready_static' | 'approved' | 'reference_only' | 'planned_missing';
+export type AssetStatus = 'ready_static' | 'approved' | 'reference_only' | 'planned_missing' | 'vector';
 
 /** Canevas commun de tous les calques (contrat du kit). */
 export const CANVAS = { width: 1024, height: 1280, centerX: 512, groundY: 1170 } as const;
@@ -39,11 +39,18 @@ export const ANCHOR_VALUES: Record<AvatarId, Partial<Record<Anchor, [number, num
 
 /** Guitares : contrat de production (noms = ids de la boutique). Aucune n'est livrée. */
 export interface EquipAsset { status: AssetStatus; layers: Partial<Record<LayerSlot, string>>; icon?: string }
+/**
+ * Guitares : rendues en VECTORIEL (src/avatar/guitars.tsx) d'après les skins de la planche de DA, en bandoulière
+ * dans le dos. Des calques PNG « guitare tenue » (approved) prendraient le relais s'ils étaient livrés.
+ */
 export const GUITARS: Record<string, EquipAsset> = {
-  guitar_study: { status: 'planned_missing', layers: {} },
-  guitar_red_electric: { status: 'planned_missing', layers: {} },
-  guitar_amethyst: { status: 'planned_missing', layers: {} },
-  guitar_crystal: { status: 'planned_missing', layers: {} },
+  guitar_study: { status: 'vector', layers: {} },
+  guitar_cedar: { status: 'vector', layers: {} },
+  guitar_maple: { status: 'vector', layers: {} },
+  guitar_red_electric: { status: 'vector', layers: {} },
+  guitar_amethyst: { status: 'vector', layers: {} },
+  guitar_crystal: { status: 'vector', layers: {} },
+  guitar_virtuoso: { status: 'vector', layers: {} },
 };
 /** Vêtements / coiffures / accessoires : nécessitent une source multicouche (doc 04). */
 export const CLOTHING_STATUS: AssetStatus = 'planned_missing';
@@ -107,6 +114,6 @@ export function renderLayers(avatar: AvatarId, guitarId: string | null): { slot:
 export function equipVisibility(itemId: string | null): 'visible' | 'blocked_by_missing_art' | 'none' {
   if (!itemId) return 'none';
   const g = GUITARS[itemId];
-  if (g) return g.status === 'approved' ? 'visible' : 'blocked_by_missing_art';
+  if (g) return g.status === 'approved' || g.status === 'vector' ? 'visible' : 'blocked_by_missing_art';
   return 'blocked_by_missing_art';
 }

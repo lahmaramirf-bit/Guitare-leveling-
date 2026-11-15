@@ -42,7 +42,7 @@ export interface CatalogItem {
 }
 
 const shop = (id: string, slot: Slot, rarity: Exclude<Rarity, 'mastery'>, name: string, desc: string, req: [ReqKey, number], extra: Partial<CatalogItem> = {}): CatalogItem =>
-  ({ id, slot, rarity, name, desc, req, price: PRICE[rarity], visual: slot === 'title' ? 'approved' : 'reference_only', ...extra });
+  ({ id, slot, rarity, name, desc, req, price: PRICE[rarity], visual: slot === 'title' || slot === 'guitar' ? 'approved' : 'reference_only', ...extra });
 
 export const DEFAULTS: CatalogItem[] = [
   { id: 'hair_boy_brown', slot: 'hair', rarity: 'common', name: 'Brun ébouriffé', desc: 'La coiffure du Guitariste.', avatars: ['boy'], default: true, visual: 'reference_only' },
@@ -50,7 +50,7 @@ export const DEFAULTS: CatalogItem[] = [
   { id: 'top_academy', slot: 'top', rarity: 'common', name: 'Veste de l’Académie', desc: 'Bleu nuit et crème, boutons dorés.', default: true, visual: 'reference_only' },
   { id: 'bottom_academy', slot: 'bottom', rarity: 'common', name: 'Pantalon de l’Académie', desc: 'Sobre et confortable.', avatars: ['boy'], default: true, visual: 'reference_only' },
   { id: 'bottom_pleated', slot: 'bottom', rarity: 'common', name: 'Jupe plissée', desc: 'L’uniforme de l’Académie.', avatars: ['girl'], default: true, visual: 'reference_only' },
-  { id: 'guitar_study', slot: 'guitar', rarity: 'common', name: 'Guitare d’étude', desc: 'Celle avec qui tout recommence.', default: true, visual: 'reference_only' },
+  { id: 'guitar_study', slot: 'guitar', rarity: 'common', name: 'Guitare d’étude', desc: 'Celle avec qui tout recommence.', default: true, visual: 'approved' },
 ];
 
 export const SHOP: CatalogItem[] = [

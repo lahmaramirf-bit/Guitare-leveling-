@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import type { AvatarId } from '../game/model';
 import { CANVAS, CHARACTERS, PLAY_SPRITES, playReady, renderLayers, resolveAnimation, type AnimState } from './manifest';
+import { GuitarBackLayer, guitarSkin } from './guitars';
 
 export function usePrefersReducedMotion(): boolean {
   const q = '(prefers-reduced-motion: reduce)';
@@ -37,12 +38,14 @@ export function Avatar({ avatar, guitar = null, state = 'idle', className = '', 
     return () => window.clearInterval(t);
   }, [play, state, reduced]);
   const bodySrc = play ? (state === 'strum' ? play.strum[frame] : play.hold!) : null;
+  const skin = play ? null : guitarSkin(guitar); // avec de vrais sprites « guitare tenue », la guitare est déjà dessinée
   const alt = label ?? (avatar === 'boy' ? 'Ton héros : le musicien aux cheveux bruns' : 'Ton héroïne : la musicienne aux cheveux corail');
   return (
-    <div className={`avatar ${className}`} data-avatar={avatar} data-anim={anim.state} data-anim-mode={anim.mode} data-blocked={anim.blocked ?? undefined}
+    <div className={`avatar ${className}`} data-avatar={avatar} data-anim={anim.state} data-anim-mode={anim.mode} data-blocked={anim.blocked ?? undefined} data-guitar={skin ? guitar ?? undefined : undefined}
       style={{ aspectRatio: `${CANVAS.width} / ${CANVAS.height}`, ['--ground' as string]: `${((CANVAS.height - CANVAS.groundY) / CANVAS.height) * 100}%` }}>
       <span className="avatar-shadow" aria-hidden="true" />
       <div className="avatar-rig">
+        {skin && <GuitarBackLayer avatar={avatar} skin={skin} />}
         {layers.map((l) => l.slot === 'body'
           ? bodySrc ? <img key={l.slot} className="avatar-layer layer-body" src={bodySrc} alt={alt} draggable={false} data-testid="avatar-body" />
           : <img key={l.slot} className={`avatar-layer layer-${l.slot}`} src={c.file} srcSet={`${c.file512} 512w, ${c.file} 1024w`} sizes="(max-width: 760px) 60vw, 420px" alt={alt} draggable={false} data-testid="avatar-body" />

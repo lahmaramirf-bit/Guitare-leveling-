@@ -16,8 +16,8 @@ import { peekSession } from '../practice/useSession';
 import { blocksOf, fmtMinutes } from '../practice/session';
 import type { Screen } from '../App';
 
-/** Hauteur de la boîte avatar, en fraction de la hauteur de la scène. */
-export const AVATAR_BOX_H = 0.92;
+/** Hauteur de la boîte avatar, en fraction de la hauteur de la scène (plus petit sur l'accueil : le décor respire, la grande version reste sur le Profil). */
+export const AVATAR_BOX_H = 0.66;
 
 /**
  * Page principale : le décor du thème EST l'écran (bord à bord), le personnage se tient sur sa ligne de sol,
@@ -115,6 +115,10 @@ export function Hub({ go, openSettings, openThemes }: { go: (s: Screen) => void;
       </div>
 
       <div className="home-board">
+        <button type="button" className={`ticker ${reduced ? 'static' : ''}`} onClick={() => setTipN((n) => n + 1)} title="Conseil suivant" data-testid="tip-band" aria-label={`Conseil : ${tip[1]}`}>
+          <span className="ticker-tag">Conseil</span>
+          <span className="ticker-track" aria-hidden="true"><span className="ticker-text" key={tipN}>{tip[1]}<i>✦</i>{tip[0]}<i>✦</i>{tip[1]}<i>✦</i></span></span>
+        </button>
         <div className="board-inner">
           <div className="board-profile">
             <div className={`rank-gem small rank-${r.id}`} title={`Rang ${rankLabel} — ${r.name}`}><span>{rankLabel}</span></div>
@@ -152,9 +156,6 @@ export function Hub({ go, openSettings, openThemes }: { go: (s: Screen) => void;
             </button>
           </div>
 
-          <button type="button" className="tip-band" onClick={() => setTipN((n) => n + 1)} title="Conseil suivant" data-testid="tip-band">
-            <span className="tip-tag">Conseil · {tip[0]}</span><span className="tip-text">{tip[1]}</span><Icon.chevron size={16} />
-          </button>
         </div>
       </div>
     </section>

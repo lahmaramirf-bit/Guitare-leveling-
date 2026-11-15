@@ -99,3 +99,11 @@ Captures : `art/previews/compare/`.
 | Mesures scène | mobile 390×473, personnage 435 px, pieds à 90 % ; ordinateur 1280×576, personnage 530 px, pieds à 90 % |
 | Captures | `docs/qa/v09/v09_{mobile,desktop}_{sakura,cyberpunk,ombre}.png` |
 | Défaut corrigé | une `url()` passée en variable CSS était résolue depuis `/assets/` : décor invisible → URL en style inline |
+
+## Lot v0.9.1 — guitares, accueil peaufiné (2026-11-15)
+| Commande | Résultat |
+|---|---|
+| `npm test` | 47/47 (visibilité des guitares = `visible`) |
+| `npm run e2e` | **60/60** (guitare d'étude dans le dos sur l'accueil ; achat « Classique en cèdre » puis équipement en garde-robe → changement visible sur le personnage) |
+| Captures | `docs/qa/v09/` (accueil, 3 thèmes, mobile et ordinateur) ; planche des 6 combinaisons personnage × guitare vérifiée à l'œil |
+| Limite | guitares dessinées en vectoriel, pas par un illustrateur : style proche de la planche (aplats, contour), à valider par le fondateur |

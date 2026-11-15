@@ -4,6 +4,7 @@ import { Bar, Crystal, Panel, RarityTag, Tabs, fmt } from '../ui/bits';
 import { Avatar, AvatarPending, AvatarPortrait } from '../avatar/Avatar';
 import { effRank, levelOf, streak } from '../game/engine';
 import { equipVisibility } from '../avatar/manifest';
+import { GuitarIcon, guitarSkin } from '../avatar/guitars';
 import { CATALOG, CONSUMABLES, ITEM, MASTERY, REQ_LABEL, SHOP, SLOT_LABELS, fitsAvatar, type CatalogItem } from '../game/catalog';
 import * as A from '../game/actions';
 import { crystalParts } from '../game/progress';
@@ -65,7 +66,8 @@ function Profile() {
 function ItemCard({ it, children, locked }: { it: CatalogItem; children?: React.ReactNode; locked?: boolean }) {
   return (
     <li className={`item ${locked ? 'locked' : 'owned'} rarity-edge-${it.rarity}`}>
-      <span className="item-slot">{SLOT_LABELS[it.slot]}{it.visual !== 'approved' && <span title="Visuel en production"> · visuel à venir</span>}</span>
+      {guitarSkin(it.id) && <span className="item-visual"><GuitarIcon skin={guitarSkin(it.id)!} size={64} /></span>}
+      <span className="item-slot">{SLOT_LABELS[it.slot]}{it.visual !== 'approved' && !guitarSkin(it.id) && <span title="Visuel en production"> · visuel à venir</span>}</span>
       <b>{it.name}</b>
       <RarityTag rarity={it.rarity} />
       <span className="small muted">{it.desc}</span>
@@ -146,7 +148,8 @@ function Wardrobe() {
           const optional = ['accessory', 'aura', 'decor', 'title'].includes(slot);
           return (
             <label key={slot}>{SLOT_LABELS[slot]}
-              <select value={cur ?? ''} onChange={(e) => act((s) => A.equip(s, slot, e.target.value || null))} disabled={!owned.length && !optional}>
+              {slot === 'guitar' && cur && guitarSkin(cur) && <span className="wardrobe-visual"><GuitarIcon skin={guitarSkin(cur)!} size={44} /></span>}
+              <select value={cur ?? ''} data-testid={`equip-${slot}`} onChange={(e) => act((s) => A.equip(s, slot, e.target.value || null))} disabled={!owned.length && !optional}>
                 {optional && <option value="">— Aucun —</option>}
                 {owned.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
               </select>

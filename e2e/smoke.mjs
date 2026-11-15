@@ -108,6 +108,7 @@ try {
   await page.getByRole('button', { name: /Accueil/ }).first().click();
   await page.getByTestId('hero-play').click();
   check('toucher le personnage joue un accord (retour visuel)', await page.locator('.strum-fx .chord-name').count() === 1);
+  check('guitare d’étude visible dans le dos du personnage (vectorielle)', await page.locator('.hub-hero [data-testid=guitar-layer]').count() === 1 && (await page.locator('.hub-hero .avatar').getAttribute('data-guitar')) === 'guitar_study');
   check('le master reste affiché tant que l’art « guitare en main » manque', (await page.getByTestId('avatar-body').getAttribute('src')).includes('_base'));
   // Entraînement : session guidée 15 min complète
   await page.getByRole('button', { name: /Entraînement/ }).first().click();
@@ -146,6 +147,11 @@ try {
 
   // Boutique : achat selon progression
   await page.getByRole('button', { name: /Profil/ }).first().click();
+  await page.getByTestId('buy-guitar_cedar').click();
+  await page.getByRole('tab', { name: 'Garde-robe' }).click();
+  await page.getByTestId('equip-guitar').selectOption('guitar_cedar');
+  check('garde-robe : la guitare équipée change sur le personnage', (await page.locator('.hero-edit-avatar .avatar').getAttribute('data-guitar')) === 'guitar_cedar');
+  await page.getByRole('tab', { name: 'Boutique' }).click();
   const before = Number((await page.getByTestId('shop-crystals').textContent()).replace(/\D/g, ''));
   await page.getByTestId('buy-t2').click();
   const s4 = await saved();

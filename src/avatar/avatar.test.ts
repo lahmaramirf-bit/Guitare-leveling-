@@ -25,7 +25,7 @@ describe('assets des personnages (gate A)', () => {
 
 describe('animations et équipements : rien d’inventé (gates F/G)', () => {
   it('le manifeste reflète le kit : guitares et rig manquants', () => {
-    for (const g of Object.keys(GUITARS)) expect(GUITARS[g].status).toBe(kit.other[g]);
+    for (const g of Object.keys(GUITARS)) expect(['vector', kit.other[g]]).toContain(GUITARS[g].status); // vectoriel depuis le 15/11 (D-045)
     for (const a of Object.values(ANIMATIONS)) expect(a.status).toBe('planned_missing');
   });
   it('sans rig : idle/célébration = placeholder, strum/marche = statique, tous bloqués', () => {
@@ -37,7 +37,7 @@ describe('animations et équipements : rien d’inventé (gates F/G)', () => {
   });
   it('une guitare équipée mais non livrée n’ajoute aucun calque', () => {
     expect(renderLayers('girl', 'guitar_crystal').map((l) => l.slot)).toEqual(['body']);
-    expect(equipVisibility('guitar_crystal')).toBe('blocked_by_missing_art');
+    expect(equipVisibility('guitar_crystal')).toBe('visible');
     expect(equipVisibility(null)).toBe('none');
   });
 });

@@ -703,3 +703,24 @@ button.hub-hero:focus-visible { outline: 3px solid #fff; outline-offset: -6px; b
   :root[data-theme='cyberpunk'] .nav { background: linear-gradient(180deg, #11203a, #070c16); }
   :root[data-theme='ombre'] .nav { background: linear-gradient(180deg, #3a1526, #150a10); }
 }
+
+/* v0.9.1 — guitare vectorielle en bandoulière (calque derrière le corps) */
+.avatar-layer.layer-guitar_back { z-index: 0; }
+.avatar-layer.layer-body { position: absolute; z-index: 1; }
+.avatar[data-anim='celebrate'] .layer-guitar_back { transform-origin: 54% 60%; animation: gl-guitar-swing .6s ease-out 2; }
+@keyframes gl-guitar-swing { 0%, 100% { transform: rotate(0); } 40% { transform: rotate(-4deg) translateY(-6px); } }
+@media (prefers-reduced-motion: reduce) { .avatar .layer-guitar_back { animation: none !important; } }
+
+/* v0.9.1 — bandeau de conseils : fin, défilant, dans la matière du thème, au sommet de la planche */
+.ticker { display: flex; align-items: center; gap: 0; width: 100%; height: 30px; margin: -18px 0 12px; padding: 0; border: 0; border-bottom: 1px solid color-mix(in srgb, var(--gold) 45%, transparent); background: #0006; color: #fff3e0; cursor: pointer; font: inherit; overflow: hidden; }
+.ticker-tag { flex: none; height: 100%; display: grid; place-items: center; padding: 0 12px; background: var(--gold); color: var(--gold-ink, #241500); font: 800 .66rem/1 var(--sans); letter-spacing: .12em; text-transform: uppercase; clip-path: polygon(0 0, 100% 0, calc(100% - 8px) 100%, 0 100%); padding-right: 18px; }
+.ticker-track { flex: 1; min-width: 0; overflow: hidden; height: 100%; display: flex; align-items: center; mask-image: linear-gradient(90deg, transparent, #000 4%, #000 96%, transparent); }
+.ticker-text { display: inline-block; white-space: nowrap; padding-left: 100%; font-size: .84rem; animation: gl-ticker 22s linear infinite; }
+.ticker-text i { font-style: normal; color: var(--gold); margin: 0 18px; }
+.ticker.static .ticker-text { padding-left: 12px; animation: none; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+@keyframes gl-ticker { to { transform: translateX(-100%); } }
+:root[data-theme='cyberpunk'] .ticker { border-bottom-color: #45e0ff66; }
+@media (max-width: 760px) { .home-scene { height: clamp(280px, 46vh, 460px); } .home-board { padding-top: 18px; } }
+.home-board { padding-top: 18px; }
+.item-visual { display: grid; place-items: center; height: 72px; margin: -6px 0 2px; border-radius: 10px; background: radial-gradient(circle at 50% 40%, #fff6, transparent 70%); }
+.wardrobe-visual { display: inline-grid; place-items: center; vertical-align: middle; margin: 0 8px 0 4px; }
