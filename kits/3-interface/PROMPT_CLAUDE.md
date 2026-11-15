@@ -1,0 +1,12 @@
+Lis CLAUDE.md, docs/DECISION_LOG.md (surtout D-040 à D-046) et docs/QA_REPORT.md. Chantier 3 : **interface**. Pars de la branche la plus récente (`git fetch origin claude/hopeful-allen-8xgg1o` et travaille dessus) ; pousse ton travail sur cette même branche ; sinon ta branche désignée + la commande pour la récupérer. Commit et push à chaque lot terminé.
+
+Contexte : l'accueil (`src/screens/Hub.tsx`) est déjà au style voulu : décor bord à bord, boutons ronds flottants, planche dans la matière du thème, barre à 5 onglets avec icônes vectorielles (`src/ui/icons.tsx`). Références : Postknight, Dokkan Battle, Seven Deadly Sins, Nikke (inspiration, pas de copie). **Un seul niveau visuel** : pas de « fond beige + cadres par-dessus », pas de panneaux à double bordure dorée.
+
+À faire, dans cet ordre, en vérifiant chaque écran sur mobile 390 px et ordinateur 1280 px :
+1. **Quêtes en superposition** : ouvertes depuis l'accueil, elles s'affichent par-dessus la scène, fond semi-transparent flouté laissant voir le décor, fermeture par ✕, glissement ou Échap ; sections Quotidien / Hebdomadaire / Mensuel (le mensuel existe-t-il ? sinon prévois l'emplacement et dis-le), portail du jour, Limit Break. Le contenu et l'XP ne changent pas.
+2. **Système visuel commun** (`src/styles.css`) : remplacer `.panel` et les matières papier par des surfaces sombres du thème (bois Sakura, métal Cyberpunk, pierre Ombre), titres en bandeau comme sur la planche de DA, boutons à bevel doré, listes à lignes pleine largeur. Garder les 3 thèmes (`docs/contracts/themes.json`, `src/appearance/themes.ts`).
+3. Écrans **Donjons, Répertoire, Entraînement, Journal, Grimoire, Profil** passés à ce système ; le Profil garde la grande version du personnage avec sa guitare et la Garde-robe.
+4. Fenêtres **Thèmes** et **Réglages** harmonisées.
+5. Peu de texte explicatif : supprime les paragraphes d'aide inutiles, garde les chiffres et les actions.
+
+Contraintes : ne touche ni au moteur d'XP (`src/game/engine.ts`, test de parité), ni aux 193 morceaux, ni aux masters ; pas de nouvelle dépendance lourde ; `npm test` et `npm run e2e` verts (adapte les tests d'interface si les sélecteurs changent) ; captures dans `docs/qa/v10/`. Réponds à chaque étape au format : 1. Décisions, 2. Implémenté et testé, 3. Fichiers modifiés, 4. Art manquant et raisons, 5. Prochaine étape. Commence par l'étape 1 et montre-moi une capture avant de passer à la 2.
