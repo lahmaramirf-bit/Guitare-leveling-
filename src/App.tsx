@@ -21,7 +21,7 @@ export type Screen = 'hub' | 'quetes' | 'heros' | 'donjons' | 'repertoire' | 'en
 const NAV: { id: Screen; label: string; short: string; icon: string }[] = [
   { id: 'hub', label: 'Accueil', short: 'Accueil', icon: '⌂' },
   { id: 'quetes', label: 'Quêtes', short: 'Quêtes', icon: '📜' },
-  { id: 'heros', label: 'Héros', short: 'Héros', icon: '✧' },
+  { id: 'heros', label: 'Profil', short: 'Profil', icon: '✧' },
   { id: 'donjons', label: 'Donjons', short: 'Donjons', icon: '⛩' },
   { id: 'repertoire', label: 'Répertoire', short: 'Morceaux', icon: '♫' },
   { id: 'entrainement', label: 'Entraînement', short: 'Exos', icon: '🎸' },
@@ -38,6 +38,7 @@ export function App() {
   const { save, today, p, crystals, act, toasts, saveOk } = useGame();
   const [screen, setScreen] = useState<Screen>(screenFromHash);
   const [themeOpen, setThemeOpen] = useState(false);
+  const [settingsOpen, setSettingsOpen] = useState(false);
 
   useEffect(() => {
     const on = () => setScreen(screenFromHash());
@@ -45,11 +46,11 @@ export function App() {
     return () => window.removeEventListener('hashchange', on);
   }, []);
   useEffect(() => {
-    if (!themeOpen) return;
-    const k = (e: KeyboardEvent) => { if (e.key === 'Escape') setThemeOpen(false); };
+    if (!themeOpen && !settingsOpen) return;
+    const k = (e: KeyboardEvent) => { if (e.key === 'Escape') { setThemeOpen(false); setSettingsOpen(false); } };
     window.addEventListener('keydown', k);
     return () => window.removeEventListener('keydown', k);
-  }, [themeOpen]);
+  }, [themeOpen, settingsOpen]);
 
   const go = (s: Screen) => { window.location.hash = '/' + s; setScreen(s); window.scrollTo({ top: 0 }); };
 
@@ -71,6 +72,7 @@ export function App() {
           <span className="chip" title="Cristaux"><Crystal /> {fmt(crystals)}</span>
           <span className="chip" title="Niveau et rang">Niv. {L} · {r.id === 'N' ? 'S+' : r.id}</span>
           <button className="btn btn-outline" onClick={() => setThemeOpen(true)}>✺ Thèmes</button>
+          <button className="btn btn-outline icon" onClick={() => setSettingsOpen(true)} aria-label="Réglages" title="Réglages" data-testid="open-settings">⚙</button>
         </div>
       </header>
 
@@ -120,10 +122,34 @@ export function App() {
         </div>
       )}
 
+      {settingsOpen && <Settings close={() => setSettingsOpen(false)} openThemes={() => { setSettingsOpen(false); setThemeOpen(true); }} />}
+
       {(!save.profile.onboarded || A.needsAvatarChoice(save)) && <Onboarding />}
 
       <div className="toasts" aria-live="polite">
         {toasts.map((t) => <div key={t.id} className={`toast toast-${t.tone}`}>{t.text}</div>)}
+      </div>
+    </div>
+  );
+}
+
+/** Réglages généraux : petite fenêtre par-dessus l'écran courant (brief : son, interface, langue). */
+function Settings({ close, openThemes }: { close: () => void; openThemes: () => void }) {
+  const { save, act } = useGame();
+  const t = THEMES.find((x) => x.id === save.profile.theme);
+  return (
+    <div className="modal-back" onClick={close}>
+      <div className="modal settings" role="dialog" aria-modal="true" aria-label="Réglages" onClick={(e) => e.stopPropagation()}>
+        <div className="modal-head"><h2>Réglages</h2><button className="btn btn-ghost" onClick={close} aria-label="Fermer">✕</button></div>
+        <ul className="settings-list">
+          <li><span>Sons (accords, signaux)</span>
+            <button className={`switch ${save.profile.sfx ? 'on' : ''}`} role="switch" aria-checked={save.profile.sfx} data-testid="set-sfx" onClick={() => act((s) => A.setSfx(s, !s.profile.sfx))}><i /></button></li>
+          <li><span>Univers</span><button className="btn" onClick={openThemes}>{t?.label ?? '—'} ›</button></li>
+          <li><span>Animations</span><span className="muted small">Suit le réglage « réduire les animations » de ton appareil</span></li>
+          <li><span>Langue</span><span className="muted small">Français (autres langues à venir)</span></li>
+          <li><span>Sauvegarde</span><a className="btn" href="#/heros" onClick={close}>Exporter / importer ›</a></li>
+        </ul>
+        <p className="muted small">Guitar Leveling v0.8 · aucune donnée n’est envoyée : tout reste sur cet appareil.</p>
       </div>
     </div>
   );
@@ -150,7 +176,7 @@ function Onboarding() {
             </button>
           ))}
         </div>
-        {!returning && <label>Ton nom de héros<input id="onb-name" maxLength={24} value={name} onChange={(e) => setName(e.target.value)} placeholder="Héros" /></label>}
+        {!returning && <label>Ton nom de héros<input id="onb-name" maxLength={24} value={name} onChange={(e) => setName(e.target.value)} placeholder={avatar ? A.DEFAULT_NAMES[avatar] : 'Rémi ou Mélodie'} /></label>}
         <button className="btn btn-primary btn-big" type="submit" disabled={!avatar}>{avatar ? 'Confirmer ce personnage ♪' : 'Choisis un personnage'}</button>
         <p className="muted small">Ce choix est définitif : ton personnage restera le même sur toutes les pages. C’est un choix d’apparence, il ne dit rien de toi.</p>
       </form>

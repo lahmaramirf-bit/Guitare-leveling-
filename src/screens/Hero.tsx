@@ -1,7 +1,8 @@
 import { useRef, useState } from 'react';
 import { useGame, kv } from '../ui/store';
 import { Bar, Crystal, Panel, RarityTag, Tabs, fmt } from '../ui/bits';
-import { Avatar, AvatarPending } from '../avatar/Avatar';
+import { Avatar, AvatarPending, AvatarPortrait } from '../avatar/Avatar';
+import { effRank, levelOf, streak } from '../game/engine';
 import { equipVisibility } from '../avatar/manifest';
 import { CATALOG, CONSUMABLES, ITEM, MASTERY, REQ_LABEL, SHOP, SLOT_LABELS, fitsAvatar, type CatalogItem } from '../game/catalog';
 import * as A from '../game/actions';
@@ -19,7 +20,7 @@ export function Hero() {
   return (
     <div className="stack">
       <Profile />
-      <Tabs label="Héros" value={sub} onChange={setSub} items={[['shop', 'Boutique'], ['wardrobe', 'Garde-robe'], ['mastery', 'Maîtrise'], ['save', 'Sauvegarde']]} />
+      <Tabs label="Profil" value={sub} onChange={setSub} items={[['shop', 'Boutique'], ['wardrobe', 'Garde-robe'], ['mastery', 'Maîtrise'], ['save', 'Sauvegarde']]} />
       {sub === 'shop' && <Shop />}
       {sub === 'wardrobe' && <Wardrobe />}
       {sub === 'mastery' && <MasteryItems />}
@@ -29,13 +30,20 @@ export function Hero() {
 }
 
 function Profile() {
-  const { save, act, toast } = useGame();
+  const { save, act, toast, today, p } = useGame();
   const [name, setName] = useState(save.profile.name);
   const avatar = save.profile.avatar;
+  const r = effRank(save, p.c.xp);
+  const sk = streak(save, today);
   const guitar = A.equipped(save, 'guitar');
   const vis = equipVisibility(guitar);
   return (
-    <Panel title="Héros">
+    <Panel title="Profil">
+      <div className="profile-head">
+        {save.profile.avatarConfirmed ? <AvatarPortrait avatar={avatar} size={72} /> : <span className="avatar-portrait" style={{ width: 72, height: 72 }} />}
+        <div><h2 className="hero-name">{save.profile.name}</h2><div className="muted small">{r.title} · Niv. {levelOf(p.c.xp)} · Rang {r.id === 'N' ? 'S+' : r.id}</div></div>
+        <span className={`streak ${sk > 0 ? 'on' : ''}`} title="Jours consécutifs avec au moins 5 quêtes sur 7">🔥 {sk} jour{sk > 1 ? 's' : ''}</span>
+      </div>
       <div className="hero-edit">
         <div className="hero-edit-avatar">{save.profile.avatarConfirmed ? <Avatar avatar={avatar} guitar={guitar} /> : <AvatarPending />}</div>
         <div className="stack-sm">

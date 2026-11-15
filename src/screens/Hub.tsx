@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { CHORDS, strum } from '../audio/strum';
 import { playReady } from '../avatar/manifest';
 import { usePrefersReducedMotion } from '../avatar/Avatar';
@@ -11,7 +11,7 @@ import { CANVAS } from '../avatar/manifest';
 import { effRank, levelOf, streak, xpFor } from '../game/engine';
 import { PLAN, QUESTS, RANKS, RANK_INDEX } from '../content';
 import { equipped } from '../game/actions';
-import { currentSong } from '../game/daily';
+import { currentSong, tipOfDay } from '../game/daily';
 import { ITEM } from '../game/catalog';
 import type { Screen } from '../App';
 import { peekSession } from '../practice/useSession';
@@ -55,6 +55,9 @@ export function Hub({ go }: { go: (s: Screen) => void }) {
     stopT.current = window.setTimeout(() => setPlaying(false), 900);
   };
   const avatarState = playing ? (playReady(save.profile.avatar) ? 'strum' : 'celebrate') : celebrating ? 'celebrate' : 'idle';
+  const [tipN, setTipN] = useState(0);
+  useEffect(() => { const t = window.setInterval(() => setTipN((n) => n + 1), 12_000); return () => window.clearInterval(t); }, []);
+  const tip = tipOfDay(today, tipN);
   const live = (() => { const x = peekSession(); return x && x.date === today && !x.finished ? x : null; })();
   const pracToday = practiceSeconds(save, today);
   const hasBg = panel.status !== 'planned_missing' && !!panel.file;
@@ -108,6 +111,10 @@ export function Hub({ go }: { go: (s: Screen) => void }) {
           <div className="hero-foot"><span className="chip"><Crystal /> <b>{fmt(crystals)}</b> cristaux</span></div>
         </div>
       </Panel>
+
+      <button type="button" className="tip-band" onClick={() => setTipN((n) => n + 1)} title="Conseil suivant" data-testid="tip-band">
+        <span className="tip-tag">Conseil · {tip[0]}</span><span className="tip-text">{tip[1]}</span><span aria-hidden="true">›</span>
+      </button>
 
       <Panel title="Pratiquer aujourd’hui">
         <div className="practice">

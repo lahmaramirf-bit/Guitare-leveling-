@@ -143,6 +143,7 @@ export const deleteCustomSong = (s: Save, id: string) =>
   commit(s, (d) => { delete d.repc[id]; delete d.rep[id]; delete d.items['R-' + id]; });
 
 // --- Profil ---
+export const setSfx = (s: Save, on: boolean) => commit(s, (d) => { d.profile.sfx = on; });
 export const setName = (s: Save, name: string) => commit(s, (d) => { const n = name.trim().slice(0, 24); if (n) d.profile.name = n; });
 /** Choix d'apparence : possible une seule fois. Ensuite l'identité de l'avatar est verrouillée. */
 export function confirmAvatar(s: Save, a: AvatarId): Save {
@@ -152,9 +153,11 @@ export function confirmAvatar(s: Save, a: AvatarId): Save {
 }
 export const needsAvatarChoice = (s: Save) => !s.profile.avatarConfirmed;
 export const setTheme = (s: Save, t: ThemeId) => commit(s, (d) => { d.profile.theme = t; });
+/** Noms par défaut (brief du 2026-11-15) : un nom musical par personnage, modifiable à tout moment. */
+export const DEFAULT_NAMES: Record<AvatarId, string> = { boy: 'Rémi', girl: 'Mélodie' };
 export function finishOnboarding(s: Save, name: string, a: AvatarId): Save {
   const withAvatar = s.profile.avatarConfirmed ? s : confirmAvatar(s, a);
-  return commit(withAvatar, (d) => { if (name.trim() || !d.profile.onboarded) d.profile.name = name.trim().slice(0, 24) || d.profile.name || 'Héros'; d.profile.onboarded = true; });
+  return commit(withAvatar, (d) => { if (name.trim() || !d.profile.onboarded) d.profile.name = name.trim().slice(0, 24) || (d.profile.name && d.profile.name !== 'Héros' ? d.profile.name : DEFAULT_NAMES[d.profile.avatar]); d.profile.onboarded = true; });
 }
 
 // --- Entraînement ---

@@ -86,6 +86,16 @@ try {
   await page.screenshot({ path: `${OUT}/03-fiche-morceau.png` });
   await page.getByRole('button', { name: 'Fermer' }).click();
 
+  // Réglages en overlay + bandeau de conseils + nom par défaut
+  await page.getByTestId('open-settings').click();
+  await page.getByTestId('set-sfx').click();
+  check('réglages : interrupteur des sons', (await saved()).profile.sfx === false);
+  await page.keyboard.press('Escape');
+  check('réglages : fermés par Échap', await page.getByTestId('set-sfx').count() === 0);
+  await page.getByRole('button', { name: /Accueil/ }).first().click();
+  const tipA = await page.getByTestId('tip-band').textContent();
+  await page.getByTestId('tip-band').click();
+  check('bandeau de conseils : conseil suivant au toucher', (await page.getByTestId('tip-band').textContent()) !== tipA);
   // Accueil : toucher le personnage → accord + notes
   await page.getByRole('button', { name: /Accueil/ }).first().click();
   await page.getByTestId('hero-play').click();
@@ -127,7 +137,7 @@ try {
   await page.screenshot({ path: `${OUT}/04-journal.png`, fullPage: true });
 
   // Boutique : achat selon progression
-  await page.getByRole('button', { name: /Héros/ }).first().click();
+  await page.getByRole('button', { name: /Profil/ }).first().click();
   const before = Number((await page.getByTestId('shop-crystals').textContent()).replace(/\D/g, ''));
   await page.getByTestId('buy-t2').click();
   const s4 = await saved();
