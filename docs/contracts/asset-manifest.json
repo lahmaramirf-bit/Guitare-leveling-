@@ -130,27 +130,6 @@
   "panelBackgrounds": [
     {
       "id": "panel_bg_sakura",
-      "path": "public/art/panel/panel_bg_sakura.png",
-      "status": "candidate",
-      "width": 1400,
-      "height": 620,
-      "groundY": 0.9,
-      "sha256": "e99bff546a203a81e624ee939d49a381a2e1aa3bbcaf56c012a80e19d14df44b",
-      "source": "ChatGPT, reçu en WebP 1400×620 et converti en PNG"
-    },
-    {
-      "id": "panel_bg_sakura_v2",
-      "path": "public/art/panel/panel_bg_sakura_v2.png",
-      "status": "candidate",
-      "width": 1400,
-      "height": 620,
-      "groundY": 0.9,
-      "sha256": "9066b21fef9ae3662852d98810b1a31afc6b5c411210a9ac188ebafabef04bcd",
-      "source": "ChatGPT, tiki-taka n°3, PNG natif",
-      "note": "variante QA uniquement (?panel=v2), non active par défaut"
-    },
-    {
-      "id": "panel_bg_sakura_v3",
       "path": "public/art/panel/panel_bg_sakura_v3.png",
       "status": "candidate",
       "width": 1400,
@@ -158,7 +137,7 @@
       "groundY": 0.9,
       "sha256": "d70c95ef262d4193c5017462a456bb9b7c4abeeacbb2ac0cdc164433ca983b2d",
       "source": "ChatGPT, tiki-taka n°5, PNG natif ; recréation inspirée de V1 (pas une retouche)",
-      "note": "variante QA (?panel=v3 ou bouton V3), non active par défaut"
+      "note": "décor unique du thème Sakura (ex-V3), affiché bord à bord sur l'accueil"
     },
     {
       "id": "panel_bg_cyberpunk",

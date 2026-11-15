@@ -1,36 +1,33 @@
 import { useEffect, useRef, useState } from 'react';
 import { CHORDS, strum } from '../audio/strum';
-import { playReady } from '../avatar/manifest';
-import { usePrefersReducedMotion } from '../avatar/Avatar';
+import { CANVAS, playReady } from '../avatar/manifest';
+import { Avatar, AvatarPending, usePrefersReducedMotion } from '../avatar/Avatar';
 import { useGame } from '../ui/store';
-import { Bar, Crystal, Panel, fmt } from '../ui/bits';
-import { Avatar, AvatarPending } from '../avatar/Avatar';
+import { Icon } from '../ui/icons';
+import { fmt } from '../ui/bits';
 import { AmbienceCanvas } from '../appearance/AmbienceCanvas';
-import { WORLDS, activePanel, panelFromUrl } from '../appearance/worlds';
-import { CANVAS } from '../avatar/manifest';
+import { WORLDS } from '../appearance/worlds';
 import { effRank, levelOf, streak, xpFor } from '../game/engine';
 import { PLAN, QUESTS, RANKS, RANK_INDEX } from '../content';
-import { equipped } from '../game/actions';
+import { equipped, practiceSeconds } from '../game/actions';
 import { currentSong, tipOfDay } from '../game/daily';
 import { ITEM } from '../game/catalog';
-import type { Screen } from '../App';
 import { peekSession } from '../practice/useSession';
 import { blocksOf, fmtMinutes } from '../practice/session';
-import { practiceSeconds } from '../game/actions';
+import type { Screen } from '../App';
 
-/** Hauteur de la boîte avatar, en fraction de la hauteur du décor. */
+/** Hauteur de la boîte avatar, en fraction de la hauteur de la scène. */
 export const AVATAR_BOX_H = 0.92;
 
 /**
- * Accueil : panneau personnage compact (décor + héros entier) puis la progression
- * et les actions de pratique. Pas de HUD ni de menu de jeu par-dessus le décor.
+ * Page principale : le décor du thème EST l'écran (bord à bord), le personnage se tient sur sa ligne de sol,
+ * et l'interface flotte par-dessus (boutons ronds, compteurs), comme dans un jeu mobile. Sous la scène, une
+ * planche dans la matière du thème porte le profil, le bouton de pratique, les raccourcis et le conseil du jour.
  */
-export function Hub({ go }: { go: (s: Screen) => void }) {
+export function Hub({ go, openSettings, openThemes }: { go: (s: Screen) => void; openSettings: () => void; openThemes: () => void }) {
   const { save, today, p, crystals, celebrating } = useGame();
   const w = WORLDS[save.profile.theme];
-  const [pick, setPick] = useState<string | null>(panelFromUrl);
-  const panel = activePanel(w.panel, pick);
-  const variantIds = w.panel.variants && w.panel.status !== 'approved' ? ['v1', ...Object.keys(w.panel.variants)] : [];
+  const panel = w.panel;
   const xp = p.c.xp;
   const L = levelOf(xp);
   const r = effRank(save, xp);
@@ -40,6 +37,10 @@ export function Hub({ go }: { go: (s: Screen) => void }) {
   const sk = streak(save, today);
   const song = currentSong(save);
   const steps = song ? save.rep[song.id]?.st?.length ?? 0 : 0;
+  const hasBg = panel.status !== 'planned_missing' && !!panel.file;
+  const boxBottom = (1 - panel.groundY) * 100 - ((CANVAS.height - CANVAS.groundY) / CANVAS.height) * AVATAR_BOX_H * 100;
+
+  // Toucher le personnage : accord synthétisé + retour visuel.
   const reduced = usePrefersReducedMotion();
   const [playing, setPlaying] = useState(false);
   const [chord, setChord] = useState<{ name: string; n: number } | null>(null);
@@ -55,88 +56,107 @@ export function Hub({ go }: { go: (s: Screen) => void }) {
     stopT.current = window.setTimeout(() => setPlaying(false), 900);
   };
   const avatarState = playing ? (playReady(save.profile.avatar) ? 'strum' : 'celebrate') : celebrating ? 'celebrate' : 'idle';
+
   const [tipN, setTipN] = useState(0);
   useEffect(() => { const t = window.setInterval(() => setTipN((n) => n + 1), 12_000); return () => window.clearInterval(t); }, []);
   const tip = tipOfDay(today, tipN);
   const live = (() => { const x = peekSession(); return x && x.date === today && !x.finished ? x : null; })();
   const pracToday = practiceSeconds(save, today);
-  const hasBg = panel.status !== 'planned_missing' && !!panel.file;
-  // Pieds du personnage sur la ligne de sol du décor : bas de la boîte = sol + marge sous les pieds du canevas.
-  const boxBottom = (1 - panel.groundY) * 100 - ((CANVAS.height - CANVAS.groundY) / CANVAS.height) * AVATAR_BOX_H * 100;
+  const rankLabel = r.id === 'N' ? 'S+' : r.id;
+
+  const side = (label: string, icon: keyof typeof Icon, onClick: () => void, badge?: number, testId?: string) => {
+    const I = Icon[icon];
+    return (
+      <button type="button" className="hud-btn" onClick={onClick} data-testid={testId}>
+        <span className="hud-ico"><I size={24} />{badge ? <b className="hud-badge">{badge}</b> : null}</span>
+        <span className="hud-lab">{label}</span>
+      </button>
+    );
+  };
 
   return (
-    <section className={`hub world-${w.id}`} aria-label="Accueil">
-      <Panel className="char-panel">
-        <div className={`char-scene ${hasBg ? 'has-bg' : 'no-bg'}`} data-testid="hub-stage" data-panel-status={panel.status} data-panel-variant={panel.variant} data-ground={panel.groundY}>
-          {hasBg
-            ? <img className="char-bg" src={panel.file!} alt="" draggable={false} />
-            : <div className="char-bg-provisional" style={{ backgroundImage: `url(${w.provisional})` }} aria-hidden="true" />}
-          {!hasBg && <AmbienceCanvas kind={w.ambience} />}
-          <button type="button" className={`hub-hero ${playing ? 'playing' : ''}`} style={{ height: `${AVATAR_BOX_H * 100}%`, bottom: `${boxBottom}%` }}
-            onClick={play} data-testid="hero-play" aria-label="Touche ton personnage pour qu’il joue un accord" title="Touche-moi pour jouer un accord ♪">
-            {save.profile.avatarConfirmed
-              ? <Avatar avatar={save.profile.avatar} guitar={equipped(save, 'guitar')} state={avatarState} />
-              : <AvatarPending />}
-            {chord && playing && (
-              <span className="strum-fx" key={chord.n} aria-hidden="true">
-                <b className="chord-name">{chord.name}</b>
-                {!reduced && ['♪', '♫', '♩'].map((n, k) => <i key={k} className={`note n${k}`}>{n}</i>)}
-              </span>
-            )}
-          </button>
-          <span className="sr-only" aria-live="polite">{chord && playing ? `Accord ${chord.name}` : ''}</span>
-          <div className="char-level"><span className="lv-label">Niv.</span> <span className="lv-num" data-testid="level">{L}</span><div className="lv-title">{r.title}</div></div>
-          <div className={`rank-gem small rank-${r.id}`} title={`Rang ${r.id} — ${r.name}`}><span>{r.id === 'N' ? 'S+' : r.id}</span></div>
-          {variantIds.length > 1 && (
-            <div className="variant-switch" role="group" aria-label="Comparer les versions du décor">
-              {variantIds.map((id) => (
-                <button key={id} type="button" aria-pressed={panel.variant === id} className={panel.variant === id ? 'sel' : ''} onClick={() => setPick(id)} data-testid={`panel-${id}`}>{id.toUpperCase()}</button>
-              ))}
-            </div>
+    <section className={`home world-${w.id}`} aria-label="Accueil">
+      <div className={`home-scene ${hasBg ? 'has-bg' : 'no-bg'}`} data-testid="hub-stage" data-panel-status={panel.status} data-ground={panel.groundY}>
+        {/* URL en style inline (résolue depuis la page) : une variable CSS consommée dans la feuille serait résolue depuis /assets/ */}
+        <div className="scene-bg" aria-hidden="true" style={{ backgroundImage: `url(${hasBg ? panel.file : w.provisional})` }} />
+        <AmbienceCanvas kind={w.ambience} />
+
+        <div className="hud hud-top">
+          <button type="button" className="hud-round" onClick={openSettings} aria-label="Réglages" title="Réglages" data-testid="open-settings"><Icon.gear /></button>
+          <span className="spacer" />
+          <span className="hud-chip" title="Cristaux"><Icon.gem /> <b>{fmt(crystals)}</b></span>
+          <span className={`hud-chip ${sk > 0 ? 'hot' : ''}`} title="Jours consécutifs avec au moins 5 quêtes sur 7"><Icon.flame /> <b>{sk}</b></span>
+        </div>
+
+        <nav className="hud hud-left" aria-label="Menu">
+          {side('Thèmes', 'sparkle', openThemes)}
+          {side('Journal', 'trophy', () => go('journal'))}
+          {side('Grimoire', 'book', () => go('grimoire'))}
+        </nav>
+        <nav className="hud hud-right" aria-label="Menu">
+          {side('Quêtes', 'scroll', () => go('quetes'), QUESTS.length - done > 0 ? QUESTS.length - done : undefined, 'hud-quetes')}
+          {side('Donjons', 'gate', () => go('donjons'))}
+          {side('Morceaux', 'note', () => go('repertoire'))}
+        </nav>
+
+        <button type="button" className={`hub-hero ${playing ? 'playing' : ''}`} style={{ height: `${AVATAR_BOX_H * 100}%`, bottom: `${boxBottom}%` }}
+          onClick={play} data-testid="hero-play" aria-label="Touche ton personnage pour qu’il joue un accord" title="Touche-moi pour jouer un accord ♪">
+          {save.profile.avatarConfirmed
+            ? <Avatar avatar={save.profile.avatar} guitar={equipped(save, 'guitar')} state={avatarState} />
+            : <AvatarPending />}
+          {chord && playing && (
+            <span className="strum-fx" key={chord.n} aria-hidden="true">
+              <b className="chord-name">{chord.name}</b>
+              {!reduced && ['♪', '♫', '♩'].map((n, k) => <i key={k} className={`note n${k}`}>{n}</i>)}
+            </span>
           )}
-          {panel.status === 'candidate' && <span className="provisional-tag"><span className="t-long">Décor candidat · à valider</span><span className="t-short">Candidat</span></span>}
-          {panel.status === 'planned_missing' && <span className="provisional-tag" title={`Fichier attendu : ${panel.expected}`}><span className="t-long">Décor provisoire · {w.name}</span><span className="t-short">Provisoire</span></span>}
-        </div>
+        </button>
+        <span className="sr-only" aria-live="polite">{chord && playing ? `Accord ${chord.name}` : ''}</span>
+      </div>
 
-        <div className="hero-body">
-          <div className="hero-name-row">
-            <h1 className="hero-name">{save.profile.name}</h1>
-            <span className="tag">{title ? ITEM[title]?.name : r.title}</span>
-            <span className="spacer" />
-            <span className={`streak ${sk > 0 ? 'on' : ''}`} title="Jours consécutifs avec au moins 5 quêtes sur 7">🔥 {sk} jour{sk > 1 ? 's' : ''}</span>
-            <button className="btn btn-gold" onClick={() => go('heros')}>Personnaliser</button>
+      <div className="home-board">
+        <div className="board-inner">
+          <div className="board-profile">
+            <div className={`rank-gem small rank-${r.id}`} title={`Rang ${rankLabel} — ${r.name}`}><span>{rankLabel}</span></div>
+            <div className="board-id">
+              <div className="board-name-row">
+                <span className="board-lv">Niv. <b data-testid="level">{L}</b></span>
+                <h1 className="board-name">{save.profile.name}</h1>
+              </div>
+              <div className="board-title">{title ? ITEM[title]?.name : r.title}</div>
+              <div className="board-xp" role="progressbar" aria-label="XP du niveau" aria-valuemin={0} aria-valuemax={xpFor(L + 1) - xpFor(L)} aria-valuenow={xp - xpFor(L)}>
+                <i style={{ width: `${Math.min(100, ((xp - xpFor(L)) / (xpFor(L + 1) - xpFor(L))) * 100)}%` }} />
+                <span className="mono">{fmt(xp - xpFor(L))} / {fmt(xpFor(L + 1) - xpFor(L))}</span>
+              </div>
+            </div>
+            <button type="button" className="board-edit" onClick={() => go('heros')}>Profil <Icon.chevron size={14} /></button>
           </div>
-          <Bar label="XP du niveau" value={xp - xpFor(L)} max={xpFor(L + 1) - xpFor(L)} />
-          {next && <Bar label={`Vers le rang ${next.id === 'N' ? 'final' : next.id} · niveau ${next.lv}`} value={xp} max={xpFor(next.lv)} />}
-          <div className="hero-foot"><span className="chip"><Crystal /> <b>{fmt(crystals)}</b> cristaux</span></div>
-        </div>
-      </Panel>
 
-      <button type="button" className="tip-band" onClick={() => setTipN((n) => n + 1)} title="Conseil suivant" data-testid="tip-band">
-        <span className="tip-tag">Conseil · {tip[0]}</span><span className="tip-text">{tip[1]}</span><span aria-hidden="true">›</span>
-      </button>
+          <button type="button" className="go-btn" data-testid={live ? 'hub-resume' : 'hub-train'} onClick={() => go('entrainement')}>
+            <span className="go-ico"><Icon.play size={26} /></span>
+            <span className="go-text">
+              <b>{live ? `Reprendre ma séance · bloc ${live.idx + 1} / ${blocksOf(live).length}` : 'S’entraîner'}</b>
+              <small>{live ? 'Ta séance t’attend' : pracToday > 0 ? `Déjà ${fmtMinutes(pracToday * 1000)} aujourd’hui · session guidée` : 'Session guidée · métronome · exercices'}</small>
+            </span>
+          </button>
 
-      <Panel title="Pratiquer aujourd’hui">
-        <div className="practice">
-          {live
-            ? <button className="btn btn-primary btn-big" data-testid="hub-resume" onClick={() => go('entrainement')}>Reprendre ma séance · bloc {live.idx + 1} / {blocksOf(live).length} ♪</button>
-            : <button className="btn btn-primary btn-big" onClick={() => go('entrainement')}>S’entraîner · session guidée ♪</button>}
-          {pracToday > 0 && <p className="small muted" data-testid="hub-practice">Pratique chronométrée aujourd’hui : <b>{fmtMinutes(pracToday * 1000)}</b></p>}
-          <button className="practice-row" onClick={() => go('quetes')}>
-            <span><b>Quêtes du jour</b><span className="small muted">≈ 38 min · 5 sur 7 gardent la série</span></span>
-            <b className="mono">{done} / {QUESTS.length}</b>
-          </button>
-          <button className="practice-row" onClick={() => go('repertoire')}>
-            <span><b>{song ? `Morceau en cours : ${song.t}` : 'Choisir un morceau à apprendre'}</b>
-              <span className="small muted">{song ? (steps < PLAN.length ? `Étape ${steps + 1} / ${PLAN.length} : ${PLAN[steps]}` : 'Plan terminé : joue-le en entier') : 'Répertoire de 193 morceaux, classés par niveau'}</span></span>
-            <span aria-hidden="true">›</span>
-          </button>
-          <button className="practice-row" onClick={() => go('donjons')}>
-            <span><b>Objectifs du rang {r.id === 'N' ? 'S+' : r.id}</b><span className="small muted">{r.name}</span></span>
-            <span aria-hidden="true">›</span>
+          <div className="board-rows">
+            <button type="button" className="board-row" onClick={() => go('quetes')}>
+              <Icon.scroll size={20} /><span><b>Quêtes du jour</b><small>5 sur 7 gardent la série</small></span><b className="mono">{done} / {QUESTS.length}</b>
+            </button>
+            <button type="button" className="board-row" onClick={() => go('repertoire')}>
+              <Icon.note size={20} /><span><b>{song ? song.t : 'Choisir un morceau'}</b><small>{song ? (steps < PLAN.length ? `Étape ${steps + 1} / ${PLAN.length} : ${PLAN[steps]}` : 'Plan terminé : joue-le en entier') : '193 morceaux classés par niveau'}</small></span><Icon.chevron size={16} />
+            </button>
+            <button type="button" className="board-row" onClick={() => go('donjons')}>
+              <Icon.gate size={20} /><span><b>Objectifs du rang {rankLabel}</b><small>{r.name}{next ? ` · rang ${next.id === 'N' ? 'S+' : next.id} au niveau ${next.lv}` : ''}</small></span><Icon.chevron size={16} />
+            </button>
+          </div>
+
+          <button type="button" className="tip-band" onClick={() => setTipN((n) => n + 1)} title="Conseil suivant" data-testid="tip-band">
+            <span className="tip-tag">Conseil · {tip[0]}</span><span className="tip-text">{tip[1]}</span><Icon.chevron size={16} />
           </button>
         </div>
-      </Panel>
+      </div>
     </section>
   );
 }

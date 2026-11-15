@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useGame } from './ui/store';
 import { Crystal, fmt } from './ui/bits';
+import { Icon, type IconName } from './ui/icons';
 import { Quests } from './screens/Quests';
 import { Hub } from './screens/Hub';
 import { Avatar } from './avatar/Avatar';
@@ -19,20 +20,19 @@ import { PLACEMENT, placement } from './game/placement';
 
 export type Screen = 'hub' | 'quetes' | 'heros' | 'donjons' | 'repertoire' | 'entrainement' | 'journal' | 'grimoire';
 
-const NAV: { id: Screen; label: string; short: string; icon: string }[] = [
-  { id: 'hub', label: 'Accueil', short: 'Accueil', icon: '⌂' },
-  { id: 'quetes', label: 'Quêtes', short: 'Quêtes', icon: '📜' },
-  { id: 'heros', label: 'Profil', short: 'Profil', icon: '✧' },
-  { id: 'donjons', label: 'Donjons', short: 'Donjons', icon: '⛩' },
-  { id: 'repertoire', label: 'Répertoire', short: 'Morceaux', icon: '♫' },
-  { id: 'entrainement', label: 'Entraînement', short: 'Exos', icon: '🎸' },
-  { id: 'journal', label: 'Journal', short: 'Journal', icon: '📘' },
-  { id: 'grimoire', label: 'Grimoire', short: 'Grimoire', icon: '📖' },
+/** Barre principale (5 entrées, comme une barre d'onglets de jeu mobile) ; donjons, journal et grimoire sont sur l'accueil. */
+const NAV: { id: Screen; label: string; short: string; icon: IconName }[] = [
+  { id: 'hub', label: 'Accueil', short: 'Accueil', icon: 'sparkle' },
+  { id: 'quetes', label: 'Quêtes', short: 'Quêtes', icon: 'scroll' },
+  { id: 'entrainement', label: 'Entraînement', short: 'Entraîner', icon: 'guitar' },
+  { id: 'repertoire', label: 'Répertoire', short: 'Morceaux', icon: 'note' },
+  { id: 'heros', label: 'Profil', short: 'Profil', icon: 'trophy' },
 ];
+const SCREENS: Screen[] = ['hub', 'quetes', 'heros', 'donjons', 'repertoire', 'entrainement', 'journal', 'grimoire'];
 
 function screenFromHash(): Screen {
   const h = window.location.hash.replace(/^#\/?/, '') as Screen;
-  return NAV.some((n) => n.id === h) ? h : 'hub';
+  return SCREENS.includes(h) ? h : 'hub';
 }
 
 export function App() {
@@ -66,8 +66,8 @@ export function App() {
       : <>Rang final atteint. Prochaine étoile au <b>niveau {100 + (stars(L) + 1) * 10}</b>.</>;
 
   return (
-    <div className="app">
-      <header className="top">
+    <div className={`app ${screen === 'hub' ? 'on-home' : ''}`}>
+      {screen !== 'hub' && <header className="top">
         <button className="logo" onClick={() => go('hub')} aria-label="Accueil Guitar Leveling"><span className="logo-note">♫</span> Guitar <em>Leveling</em></button>
         <div className="top-right">
           <span className="chip" title="Cristaux"><Crystal /> {fmt(crystals)}</span>
@@ -75,7 +75,7 @@ export function App() {
           <button className="btn btn-outline" onClick={() => setThemeOpen(true)}>✺ Thèmes</button>
           <button className="btn btn-outline icon" onClick={() => setSettingsOpen(true)} aria-label="Réglages" title="Réglages" data-testid="open-settings">⚙</button>
         </div>
-      </header>
+      </header>}
 
       {screen !== 'hub' && <div className="quest-banner" role="note"><span className="bang">!</span><span>{sysline}</span></div>}
       {!saveOk && <div className="quest-banner warn" role="alert">Sauvegarde indisponible dans ce navigateur (navigation privée ?). Exporte ta progression depuis Héros › Sauvegarde.</div>}
@@ -83,7 +83,7 @@ export function App() {
       <nav className="nav" aria-label="Navigation principale">
         {NAV.map((n) => (
           <button key={n.id} className={`nav-btn ${screen === n.id ? 'sel' : ''}`} aria-current={screen === n.id ? 'page' : undefined} onClick={() => go(n.id)}>
-            <span className="nav-ico" aria-hidden="true">{n.icon}</span>
+            <span className="nav-ico" aria-hidden="true">{(() => { const I = Icon[n.icon]; return <I size={22} />; })()}</span>
             <span className="nav-label">{n.label}</span>
             <span className="nav-short" aria-hidden="true">{n.short}</span>
             {n.id === 'quetes' && done < QUESTS.length && <span className="badge">{QUESTS.length - done}</span>}
@@ -92,7 +92,7 @@ export function App() {
       </nav>
 
       <main className="main">
-        {screen === 'hub' && <Hub go={go} />}
+        {screen === 'hub' && <Hub go={go} openSettings={() => setSettingsOpen(true)} openThemes={() => setThemeOpen(true)} />}
         {screen === 'quetes' && <Quests goHero={() => go('heros')} />}
         {screen === 'heros' && <Hero />}
         {screen === 'donjons' && <Dungeons />}
@@ -102,7 +102,7 @@ export function App() {
         {screen === 'grimoire' && <Grimoire />}
       </main>
 
-      <footer className="foot muted small">Guitar Leveling · v0.8 · Personnages : masters validés (statiques). Décors finaux et animations en production.</footer>
+      {screen !== 'hub' && <footer className="foot muted small">Guitar Leveling · v0.8 · Personnages : masters validés (statiques). Décors finaux et animations en production.</footer>}
 
       {themeOpen && (
         <div className="modal-back" onClick={() => setThemeOpen(false)}>

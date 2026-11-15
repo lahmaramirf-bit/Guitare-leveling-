@@ -75,7 +75,7 @@ try {
   check('portail fermé + défi hebdo enregistrés', !!d1.urg && Object.values(s1.weeks).flat().length === 1);
 
   // Donjon
-  await page.getByRole('button', { name: /Donjons/ }).first().click();
+  await page.evaluate(() => { location.hash = '/donjons'; }); await page.waitForTimeout(150);
   check('donjons : ouvert sur le rang de départ (D)', await page.getByRole('tab', { name: /^D/ }).getAttribute('aria-selected') === 'true');
   await page.getByRole('tab', { name: /^E/ }).click();
   await page.getByTestId('E-obj-0').click();
@@ -136,7 +136,7 @@ try {
   await page.getByRole('button', { name: 'Nouvelle séance' }).click();
 
   // Journal : record + révision d'ombre
-  await page.getByRole('button', { name: /Journal/ }).first().click();
+  await page.evaluate(() => { location.hash = '/journal'; }); await page.waitForTimeout(150);
   await page.getByLabel('Nouveau record Gammes').fill('72');
   await page.locator('form.rec').first().getByRole('button', { name: 'Noter' }).click();
   await page.locator('.shadow').first().getByRole('button', { name: 'Rejouer' }).click();
@@ -177,14 +177,14 @@ try {
     await page.getByRole('button', { name: new RegExp(t) }).first().click();
     await page.keyboard.press('Escape');
     await wait(700);
-    const w = await page.locator('.hub').getAttribute('class');
+    const w = await page.locator('.home').getAttribute('class');
     check(`thème ${t} : univers appliqué au hub`, (await page.evaluate(() => document.documentElement.dataset.theme)) === t.toLowerCase() && w.includes('world-' + t.toLowerCase()));
     await page.addStyleTag({ content: '.provisional-tag{display:none!important}' });
     await page.getByTestId('hub-stage').screenshot({ path: `${OUT}/06-sans-nom-${['A', 'B', 'C'][['Sakura', 'Cyberpunk', 'Ombre'].indexOf(t)]}.png` });
   }
 
   // Grimoire
-  await page.getByRole('button', { name: /Grimoire/ }).first().click();
+  await page.evaluate(() => { location.hash = '/grimoire'; }); await page.waitForTimeout(150);
   check('grimoire (méthode)', await page.getByText('Apprendre un nouveau morceau').isVisible());
 
   // Reprise d'une sauvegarde du projet de base

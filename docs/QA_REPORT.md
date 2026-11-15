@@ -90,3 +90,12 @@ Captures : `art/previews/compare/`.
 | `npm run e2e` | **58/58** (nouveaux : questionnaire bloquant sans réponses, rang de départ D annoncé puis effectif, donjons ouverts sur D, pas de questionnaire pour une sauvegarde du projet de base, réglages par Échap, interrupteur des sons, bandeau de conseils) |
 | `typecheck` / contrats | 0 erreur |
 | Captures | `docs/qa/v08/v082_*` (accueil, profil, réglages) et `v083_*` (questionnaire, personnage, donjon de départ D), mobile 390 px |
+
+## Lot v0.9 — page principale bord à bord (2026-11-15)
+| Commande | Résultat |
+|---|---|
+| `npm test` | 47/47 (test des variantes remplacé par « un seul décor par thème ») |
+| `npm run e2e` | **58/58** (donjons/journal/grimoire atteints par l'adresse, barre à 5 onglets) |
+| Mesures scène | mobile 390×473, personnage 435 px, pieds à 90 % ; ordinateur 1280×576, personnage 530 px, pieds à 90 % |
+| Captures | `docs/qa/v09/v09_{mobile,desktop}_{sakura,cyberpunk,ombre}.png` |
+| Défaut corrigé | une `url()` passée en variable CSS était résolue depuis `/assets/` : décor invisible → URL en style inline |

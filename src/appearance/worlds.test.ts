@@ -1,27 +1,19 @@
 import { describe, expect, it } from 'vitest';
 import { existsSync } from 'node:fs';
-import { WORLDS, activePanel, panelFromUrl } from './worlds';
+import { WORLDS } from './worlds';
 
-describe('décor du panneau (variantes)', () => {
-  it('V1 reste le décor par défaut ; V2 seulement sur ?panel=v2', () => {
-    expect(activePanel(WORLDS.sakura.panel, '').file).toBe('./art/panel/panel_bg_sakura.png');
-    expect(activePanel(WORLDS.sakura.panel, '?panel=v2').file).toBe('./art/panel/panel_bg_sakura_v2.png');
-    expect(activePanel(WORLDS.sakura.panel, '?panel=zz').variant).toBe('v1');
-    expect(activePanel(WORLDS.sakura.panel, 'v2').variant).toBe('v2');
-    expect(panelFromUrl('http://localhost:5173/#/hub?panel=v2')).toBe('v2');
-    expect(panelFromUrl('http://localhost:5173/?panel=v2#/hub')).toBe('v2');
-    expect(panelFromUrl('http://localhost:5173/#/hub')).toBe(null);
+describe('décor de l’accueil : un seul par thème', () => {
+  it('Sakura : fichier local présent, jamais d’URL externe ; aucune version approuvée sans le fondateur', () => {
+    const p = WORLDS.sakura.panel;
+    expect(p.file).toBe('./art/panel/panel_bg_sakura.png');
+    expect(existsSync('public/' + p.file!.slice(2))).toBe(true);
+    expect(p.status).toBe('candidate');
   });
-  it('aucune version n’est approuvée sans validation du fondateur', () => {
-    expect(WORLDS.sakura.panel.status).toBe('candidate');
-    expect(WORLDS.sakura.panel.variants?.v2.status).toBe('candidate');
-    expect(WORLDS.sakura.panel.variants?.v3.status).toBe('candidate');
-    expect(activePanel(WORLDS.sakura.panel, '?panel=v3').file).toBe('./art/panel/panel_bg_sakura_v3.png');
-  });
-  it('les fichiers référencés existent en local (pas d’URL externe)', () => {
-    for (const f of [WORLDS.sakura.panel.file!, ...Object.values(WORLDS.sakura.panel.variants!).map((v) => v.file)]) {
-      expect(f.startsWith('./art/panel/')).toBe(true);
-      expect(existsSync('public/' + f.slice(2))).toBe(true);
+  it('Cyberpunk et Ombre : décor attendu, provisoire en attendant', () => {
+    for (const t of ['cyberpunk', 'ombre'] as const) {
+      expect(WORLDS[t].panel.status).toBe('planned_missing');
+      expect(WORLDS[t].panel.file).toBeNull();
+      expect(WORLDS[t].provisional.startsWith('./concept/')).toBe(true);
     }
   });
 });

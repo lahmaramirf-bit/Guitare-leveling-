@@ -20,22 +20,8 @@ export interface PanelBg {
   size: [number, number];
   /** ligne de sol, en fraction de la hauteur de l'image (pieds du personnage) */
   groundY: number;
-  /** autres versions candidates du même décor (comparaison QA, jamais affichées par défaut) */
-  variants?: Record<string, { status: PanelStatus; file: string; groundY: number }>;
 }
 
-/** Variante demandée dans l'adresse : `?panel=v2`, accepté aussi après le `#` (ex. `#/hub?panel=v2`). */
-export function panelFromUrl(href = typeof location !== 'undefined' ? location.href : ''): string | null {
-  const m = /[?&]panel=([a-z0-9]+)/i.exec(href);
-  return m ? m[1].toLowerCase() : null;
-}
-
-/** Décor actif : la version par défaut (v1), ou une variante candidate (comparaison, jamais par défaut). */
-export function activePanel(panel: PanelBg, search: string | null = panelFromUrl()): PanelBg & { variant: string } {
-  const id = search && search.includes('panel=') ? panelFromUrl(search) : search;
-  const v = id ? panel.variants?.[id] : undefined;
-  return v ? { ...panel, ...v, variant: id! } : { ...panel, variant: 'v1' };
-}
 
 export interface World {
   id: ThemeId;
@@ -58,11 +44,7 @@ export const WORLDS: Record<ThemeId, World> = {
     background: { status: 'planned_missing', desktop: null, mobile: null, expected: ['bg_sakura_desktop.png', 'bg_sakura_mobile.png'] },
     foreground: { status: 'planned_missing', file: null, expected: 'fg_sakura.png' },
     provisional: './concept/theme-sakura.jpg',
-    panel: { status: 'candidate', file: './art/panel/panel_bg_sakura.png', expected: 'panel_bg_sakura.png', size: [1400, 620], groundY: 0.9,
-      variants: {
-        v2: { status: 'candidate', file: './art/panel/panel_bg_sakura_v2.png', groundY: 0.9 },
-        v3: { status: 'candidate', file: './art/panel/panel_bg_sakura_v3.png', groundY: 0.9 },
-      } }, ambience: 'petals',
+    panel: { status: 'candidate', file: './art/panel/panel_bg_sakura.png', expected: 'panel_bg_sakura.png', size: [1400, 620], groundY: 0.9 }, ambience: 'petals',
     materials: 'bois clair, papier crème, cadres dorés, pétales',
   },
   cyberpunk: {

@@ -600,3 +600,106 @@ button.hub-hero:focus-visible { outline: 3px solid #fff; outline-offset: -6px; b
 .quiz-a { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
 .quiz-a .btn { white-space: normal; text-align: left; line-height: 1.25; padding: 8px 10px; }
 @media (max-width: 760px) { .quiz-a .btn { font-size: .8rem; padding: 7px 8px; min-height: 40px; } .quiz-q legend { font-size: .95rem; } .onboarding h2 { margin-top: 0; } }
+
+/* ================= v0.9 — page principale « jeu mobile » : décor bord à bord, HUD flottant, planche du thème ================= */
+.on-home { max-width: none; padding: 0 0 96px; display: flex; flex-direction: column; min-height: 100vh; }
+.on-home .main { order: 1; width: 100%; }
+.on-home .nav { order: 2; max-width: 1120px; width: 100%; margin: 14px auto 0; padding: 0 16px; }
+.on-home .quest-banner { display: none; }
+.home { display: flex; flex-direction: column; width: 100%; }
+
+.home-scene { position: relative; width: 100%; height: clamp(300px, 64vh, 620px); overflow: hidden; isolation: isolate; background: #1a0a2e; }
+.scene-bg { position: absolute; inset: 0; background-position: center bottom; background-size: cover; background-repeat: no-repeat; }
+.home-scene.no-bg .scene-bg { filter: blur(6px) saturate(1.1); transform: scale(1.06); }
+.home-scene.no-bg::after { content: 'Décor provisoire'; position: absolute; right: 10px; bottom: 8px; z-index: 3; font-size: .62rem; letter-spacing: .1em; text-transform: uppercase; padding: 3px 8px; border-radius: 4px; background: #0009; color: #fff; }
+.home-scene canvas { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none; }
+.home-scene .hub-hero { position: absolute; left: 50%; transform: translateX(-50%); aspect-ratio: 1024 / 1280; z-index: 2; }
+
+.hud { position: absolute; z-index: 4; display: flex; gap: 8px; }
+.hud-top { left: 10px; right: 10px; top: calc(8px + env(safe-area-inset-top)); align-items: center; }
+.hud-left { left: 8px; top: 68px; flex-direction: column; gap: 12px; }
+.hud-right { right: 8px; top: 68px; flex-direction: column; gap: 12px; align-items: flex-end; }
+.hud-round, .hud-ico { width: 46px; height: 46px; border-radius: 50%; display: grid; place-items: center; color: #fff; background: radial-gradient(circle at 35% 30%, #4a3560f2, #170c26f2); border: 2px solid color-mix(in srgb, var(--gold) 85%, #fff); box-shadow: 0 3px 0 #0008, 0 6px 14px #0007, inset 0 1px 0 #fff4; cursor: pointer; }
+.hud-round { padding: 0; }
+.hud-btn { display: grid; justify-items: center; gap: 3px; background: none; border: 0; padding: 0; cursor: pointer; color: #fff; width: 62px; }
+.hud-ico { position: relative; width: 50px; height: 50px; transition: transform .12s; }
+.hud-btn:active .hud-ico, .hud-round:active { transform: scale(.94); }
+.hud-lab { font: 700 .66rem/1 var(--sans); letter-spacing: .06em; text-transform: uppercase; text-shadow: 0 1px 2px #000, 0 2px 8px #000c; }
+.hud-badge { position: absolute; top: -5px; right: -5px; min-width: 20px; height: 20px; padding: 0 5px; border-radius: 10px; background: var(--accent); color: #fff; font: 800 .7rem/20px var(--sans); text-align: center; border: 2px solid #fff; box-shadow: 0 2px 6px #0008; }
+.hud-chip { display: inline-flex; align-items: center; gap: 5px; height: 32px; padding: 0 12px 0 8px; border-radius: 999px; background: #120a1fd9; color: #fff; border: 1.5px solid color-mix(in srgb, var(--gold) 75%, transparent); font-size: .9rem; box-shadow: 0 2px 8px #0007; }
+.hud-chip svg { color: #7fd6ff; }
+.hud-chip.hot svg { color: #ffb020; }
+:root[data-theme='cyberpunk'] .hud-round, :root[data-theme='cyberpunk'] .hud-ico { background: radial-gradient(circle at 35% 30%, #1a3a5af2, #060b16f2); border-color: #45e0ff; }
+:root[data-theme='ombre'] .hud-round, :root[data-theme='ombre'] .hud-ico { background: radial-gradient(circle at 35% 30%, #4a1526f2, #140810f2); }
+
+/* Planche sous la scène : matière du thème, pleine largeur, pas de cadre */
+.home-board { position: relative; z-index: 5; margin-top: -14px; color: #fff8ee; padding: 18px 16px 22px; border-top: 3px solid color-mix(in srgb, var(--gold) 80%, #fff); box-shadow: 0 -10px 30px #0006; }
+.board-inner { max-width: 760px; margin: 0 auto; display: grid; gap: 14px; }
+:root[data-theme='sakura'] .home-board { background: repeating-linear-gradient(90deg, #0000 0 38px, #0002 38px 40px), linear-gradient(180deg, #7a4426, #5b3019 60%, #4a2612); }
+:root[data-theme='cyberpunk'] .home-board { color: #e8fbff; border-top-color: #45e0ff; background: linear-gradient(180deg, #0f1a2e, #080d18); box-shadow: 0 -10px 30px #000a, inset 0 1px 0 #45e0ff55; }
+:root[data-theme='ombre'] .home-board { color: #f4e6d4; background: radial-gradient(ellipse at 50% 0%, #4a1a2a 0%, #1a0d14 55%, #120a10); }
+
+.board-profile { display: flex; align-items: center; gap: 14px; }
+.board-profile .rank-gem { position: static; flex: none; width: 48px; height: 48px; margin: 0 6px 0 4px; }
+.board-profile .rank-gem span { font-size: 1.1rem; }
+.board-id { flex: 1; min-width: 0; display: grid; gap: 2px; }
+.board-name-row { display: flex; align-items: baseline; gap: 10px; min-width: 0; }
+.board-lv { flex: none; font-size: .8rem; text-transform: uppercase; letter-spacing: .08em; opacity: .9; }
+.board-lv b { font-size: 1.2rem; font-family: var(--serif); }
+.board-name { margin: 0; font-family: var(--serif); font-size: 1.35rem; letter-spacing: .04em; text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.board-title { font-size: .82rem; opacity: .85; }
+.board-xp { position: relative; height: 14px; border-radius: 7px; background: #0006; border: 1px solid #0008; overflow: hidden; margin-top: 4px; }
+.board-xp i { position: absolute; inset: 0 auto 0 0; background: linear-gradient(180deg, color-mix(in srgb, var(--gold) 85%, #fff), var(--gold)); border-radius: 7px; }
+.board-xp span { position: absolute; inset: 0; font-size: .66rem; line-height: 12px; text-align: center; color: #fff; text-shadow: 0 1px 2px #000; }
+.board-edit { flex: none; display: inline-flex; align-items: center; gap: 2px; padding: 8px 10px 8px 12px; border-radius: 999px; border: 1.5px solid #fff5; background: #0004; color: inherit; font: 700 .78rem var(--sans); cursor: pointer; }
+
+.go-btn { display: flex; align-items: center; gap: 14px; width: 100%; padding: 12px 16px; border-radius: 16px; border: 0; cursor: pointer; text-align: left; color: var(--gold-ink, #241500);
+  background: linear-gradient(180deg, color-mix(in srgb, var(--gold) 80%, #fff) 0%, var(--gold) 45%, color-mix(in srgb, var(--gold) 80%, #000) 100%); box-shadow: 0 5px 0 color-mix(in srgb, var(--gold) 45%, #000), 0 8px 18px #0007, inset 0 1px 0 #fff8; transition: transform .1s, box-shadow .1s; }
+.go-btn:active { transform: translateY(3px); box-shadow: 0 2px 0 color-mix(in srgb, var(--gold) 45%, #000), 0 4px 10px #0007; }
+.go-ico { flex: none; width: 46px; height: 46px; border-radius: 50%; display: grid; place-items: center; background: #0003; }
+.go-text { display: grid; gap: 1px; min-width: 0; }
+.go-text b { font-family: var(--serif); font-size: 1.15rem; letter-spacing: .03em; text-transform: uppercase; }
+.go-text small { font-size: .78rem; opacity: .85; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+.board-rows { display: grid; gap: 8px; }
+.board-row { display: flex; align-items: center; gap: 12px; width: 100%; padding: 10px 12px; border-radius: 12px; border: 1px solid #fff2; background: #0005; color: inherit; cursor: pointer; text-align: left; font: inherit; }
+.board-row > span { flex: 1; min-width: 0; display: grid; }
+.board-row small { font-size: .76rem; opacity: .8; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.board-row > svg { flex: none; opacity: .9; }
+.home-board .tip-band { background: #0004; border-color: #fff2; color: inherit; }
+.home-board .tip-tag { color: var(--gold); }
+
+@media (max-width: 760px) {
+  .home-scene { height: clamp(300px, 56vh, 520px); }
+  .hud-left, .hud-right { top: 58px; gap: 8px; }
+  .hud-btn { width: 56px; }
+  .hud-ico { width: 44px; height: 44px; }
+  .hud-lab { font-size: .6rem; }
+  .board-name { font-size: 1.15rem; }
+  .on-home .nav { margin: 0; }
+}
+@media (min-width: 761px) {
+  .hud-left { left: max(8px, calc(50% - 560px)); }
+  .hud-right { right: max(8px, calc(50% - 560px)); }
+  .hud-top { left: max(10px, calc(50% - 560px)); right: max(10px, calc(50% - 560px)); }
+}
+
+/* Barre d'onglets principale : 5 entrées, matière sombre, icônes vectorielles (toutes tailles d'écran) */
+.nav { grid-template-columns: repeat(5, 1fr); gap: 0; margin: 14px auto 18px; padding: 6px; border-radius: 16px; background: linear-gradient(180deg, #2a1a3a, #170c26); border: 1.5px solid color-mix(in srgb, var(--gold) 55%, transparent); box-shadow: 0 6px 18px #0006, inset 0 1px 0 #fff2; }
+.nav-btn { border: 0; box-shadow: none; background: transparent; color: #e9dcf5; font-family: var(--sans); text-transform: none; letter-spacing: 0; font-size: .7rem; font-weight: 700; padding: 6px 2px 4px; border-radius: 12px; gap: 3px; }
+.nav-btn .nav-ico { display: grid; place-items: center; width: 40px; height: 30px; border-radius: 10px; transition: background .12s, transform .12s; }
+.nav-btn.sel { background: transparent; color: var(--gold); box-shadow: none; border: 0; }
+.nav-btn.sel .nav-ico { background: color-mix(in srgb, var(--gold) 18%, transparent); transform: translateY(-1px); }
+.nav-btn.sel .badge, .badge { background: var(--accent); color: #fff; border-color: #170c26; }
+:root[data-theme='cyberpunk'] .nav { background: linear-gradient(180deg, #11203a, #070c16); border-color: #45e0ff88; }
+:root[data-theme='cyberpunk'] .nav-btn.sel { color: #45e0ff; }
+:root[data-theme='cyberpunk'] .nav-btn.sel .nav-ico { background: #45e0ff22; }
+:root[data-theme='ombre'] .nav { background: linear-gradient(180deg, #3a1526, #150a10); }
+@media (max-width: 760px) {
+  .nav { border-radius: 0; border-left: 0; border-right: 0; border-bottom: 0; margin: 0; padding: 4px 4px calc(4px + env(safe-area-inset-bottom)); background: linear-gradient(180deg, #2a1a3a, #170c26); box-shadow: 0 -6px 20px #0008; }
+  .nav-btn { font-size: .62rem; }
+  .nav-label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+  .nav-short { display: block; }
+  :root[data-theme='cyberpunk'] .nav { background: linear-gradient(180deg, #11203a, #070c16); }
+  :root[data-theme='ombre'] .nav { background: linear-gradient(180deg, #3a1526, #150a10); }
+}
